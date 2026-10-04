@@ -1,0 +1,12 @@
+{
+  "input_sha256": "bfa7a4cb4192578f95c2dee1740b2aa579f06676173771e772cde1420d649137",
+  "implementation_sha256": "c5e5b5fc5168c6c1eb8e287ede540fa9a3368c02052707642d08378ec95faa1c",
+  "model_revision": "351844e75ed0bcbbe3f10671b3c808d2b83894ee",
+  "max_new_tokens": 1024,
+  "routed_id_hash": "a4c06972fac45e51a989f378d7daad9d64ab1354113b834a770bfd2c33df18f6",
+  "max_rows": null,
+  "load_in_4bit": true,
+  "base_seed": 42,
+  "context_policy": "preserve-input-cap-generation-to-remaining-v1",
+  "_source_manifest_sha256": "d8dff45d0e59ed97c4d805c67d5275f6589921fb462f1ff543ca1ca9e8df6001"
+}

@@ -1,0 +1,452 @@
+[
+  {
+    "dataset": "Additional Reddit 9000",
+    "model": "Llama 3",
+    "method": "CoT",
+    "n": 9000,
+    "phase1_accuracy_percent": 97.57777777777778,
+    "accuracy_percent": 97.72222222222223,
+    "macro_f1_percent": 97.7234339403727,
+    "corrected": 28,
+    "introduced": 15,
+    "net_corrections": 13,
+    "exact_mcnemar_vs_phase1": 0.0659940344557981,
+    "confusion_matrix": [
+      [
+        2889,
+        18,
+        93
+      ],
+      [
+        11,
+        2960,
+        29
+      ],
+      [
+        36,
+        18,
+        2946
+      ]
+    ]
+  },
+  {
+    "dataset": "Additional Reddit 9000",
+    "model": "Llama 3",
+    "method": "Direct",
+    "n": 9000,
+    "phase1_accuracy_percent": 97.57777777777778,
+    "accuracy_percent": 97.72222222222223,
+    "macro_f1_percent": 97.72416328221291,
+    "corrected": 32,
+    "introduced": 19,
+    "net_corrections": 13,
+    "exact_mcnemar_vs_phase1": 0.09191454981585423,
+    "confusion_matrix": [
+      [
+        2894,
+        13,
+        93
+      ],
+      [
+        13,
+        2958,
+        29
+      ],
+      [
+        39,
+        18,
+        2943
+      ]
+    ]
+  },
+  {
+    "dataset": "Additional Reddit 9000",
+    "model": "Llama 3",
+    "method": "SELF-DISCOVER",
+    "n": 9000,
+    "phase1_accuracy_percent": 97.57777777777778,
+    "accuracy_percent": 97.76666666666667,
+    "macro_f1_percent": 97.76884831587881,
+    "corrected": 30,
+    "introduced": 13,
+    "net_corrections": 17,
+    "exact_mcnemar_vs_phase1": 0.0137181850586785,
+    "confusion_matrix": [
+      [
+        2890,
+        13,
+        97
+      ],
+      [
+        12,
+        2959,
+        29
+      ],
+      [
+        36,
+        14,
+        2950
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 2",
+    "method": "CoT",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 79.0,
+    "macro_f1_percent": 78.92978881743872,
+    "corrected": 19,
+    "introduced": 33,
+    "net_corrections": -14,
+    "exact_mcnemar_vs_phase1": 0.07039422106706228,
+    "confusion_matrix": [
+      [
+        73,
+        8,
+        19
+      ],
+      [
+        0,
+        90,
+        10
+      ],
+      [
+        20,
+        6,
+        74
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 2",
+    "method": "Direct",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 76.33333333333333,
+    "macro_f1_percent": 75.16269305742989,
+    "corrected": 11,
+    "introduced": 33,
+    "net_corrections": -22,
+    "exact_mcnemar_vs_phase1": 0.0012600338162656044,
+    "confusion_matrix": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        13,
+        37,
+        50
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 2",
+    "method": "SELF-DISCOVER",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 89.33333333333333,
+    "macro_f1_percent": 89.34518375849744,
+    "corrected": 22,
+    "introduced": 5,
+    "net_corrections": 17,
+    "exact_mcnemar_vs_phase1": 0.0015137195587158203,
+    "confusion_matrix": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        6,
+        5,
+        89
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 3",
+    "method": "CoT",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 84.66666666666667,
+    "macro_f1_percent": 84.67596324739182,
+    "corrected": 15,
+    "introduced": 12,
+    "net_corrections": 3,
+    "exact_mcnemar_vs_phase1": 0.7011080384254456,
+    "confusion_matrix": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        0,
+        25,
+        75
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 3",
+    "method": "Direct",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 89.33333333333333,
+    "macro_f1_percent": 89.38034188034189,
+    "corrected": 26,
+    "introduced": 9,
+    "net_corrections": 17,
+    "exact_mcnemar_vs_phase1": 0.0059881205670535564,
+    "confusion_matrix": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        0,
+        11,
+        89
+      ]
+    ]
+  },
+  {
+    "dataset": "Mixed Emotion",
+    "model": "Llama 3",
+    "method": "SELF-DISCOVER",
+    "n": 300,
+    "phase1_accuracy_percent": 83.66666666666667,
+    "accuracy_percent": 92.66666666666667,
+    "macro_f1_percent": 92.6965626965627,
+    "corrected": 28,
+    "introduced": 1,
+    "net_corrections": 27,
+    "exact_mcnemar_vs_phase1": 1.1175870895385742e-07,
+    "confusion_matrix": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        0,
+        1,
+        99
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 2",
+    "method": "CoT",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 96.925,
+    "macro_f1_percent": 96.92399187492346,
+    "corrected": 48,
+    "introduced": 47,
+    "net_corrections": 1,
+    "exact_mcnemar_vs_phase1": 1.0,
+    "confusion_matrix": [
+      [
+        3828,
+        30,
+        142
+      ],
+      [
+        16,
+        3949,
+        35
+      ],
+      [
+        111,
+        35,
+        3854
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 2",
+    "method": "Direct",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 96.99166666666666,
+    "macro_f1_percent": 96.98976497737766,
+    "corrected": 45,
+    "introduced": 36,
+    "net_corrections": 9,
+    "exact_mcnemar_vs_phase1": 0.3741744176047079,
+    "confusion_matrix": [
+      [
+        3864,
+        24,
+        112
+      ],
+      [
+        22,
+        3949,
+        29
+      ],
+      [
+        131,
+        43,
+        3826
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 2",
+    "method": "SELF-DISCOVER",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 96.94166666666666,
+    "macro_f1_percent": 96.93905928714422,
+    "corrected": 52,
+    "introduced": 49,
+    "net_corrections": 3,
+    "exact_mcnemar_vs_phase1": 0.842382098507744,
+    "confusion_matrix": [
+      [
+        3843,
+        30,
+        127
+      ],
+      [
+        15,
+        3951,
+        34
+      ],
+      [
+        109,
+        52,
+        3839
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 3",
+    "method": "CoT",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 97.15,
+    "macro_f1_percent": 97.14709383641275,
+    "corrected": 63,
+    "introduced": 35,
+    "net_corrections": 28,
+    "exact_mcnemar_vs_phase1": 0.006092629672064721,
+    "confusion_matrix": [
+      [
+        3849,
+        34,
+        117
+      ],
+      [
+        13,
+        3958,
+        29
+      ],
+      [
+        104,
+        45,
+        3851
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 3",
+    "method": "Direct",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 97.10833333333333,
+    "macro_f1_percent": 97.10561517386319,
+    "corrected": 68,
+    "introduced": 45,
+    "net_corrections": 23,
+    "exact_mcnemar_vs_phase1": 0.038018645582796384,
+    "confusion_matrix": [
+      [
+        3854,
+        28,
+        118
+      ],
+      [
+        16,
+        3956,
+        28
+      ],
+      [
+        109,
+        48,
+        3843
+      ]
+    ]
+  },
+  {
+    "dataset": "Reddit",
+    "model": "Llama 3",
+    "method": "SELF-DISCOVER",
+    "n": 12000,
+    "phase1_accuracy_percent": 96.91666666666667,
+    "accuracy_percent": 97.2,
+    "macro_f1_percent": 97.19902501721215,
+    "corrected": 72,
+    "introduced": 38,
+    "net_corrections": 34,
+    "exact_mcnemar_vs_phase1": 0.0015330525764724046,
+    "confusion_matrix": [
+      [
+        3851,
+        24,
+        125
+      ],
+      [
+        13,
+        3954,
+        33
+      ],
+      [
+        104,
+        37,
+        3859
+      ]
+    ]
+  }
+]

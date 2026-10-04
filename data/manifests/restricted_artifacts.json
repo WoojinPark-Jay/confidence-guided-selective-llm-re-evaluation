@@ -1,0 +1,27 @@
+{
+  "primary_source_table": {
+    "redistributed": false,
+    "reason": "size and source-platform content boundary",
+    "sha256": "822f9e2f74dd42664d2fd60657c096cdb3db5b4dd975a3ce309031c5300beffd",
+    "bytes": 1442302707
+  },
+  "additional_9000_source_files": {
+    "evaluation_inputs.csv": "320291db23c55be1e8b725e7a2def90f10c9cda1105dd18633cd21097b20102a",
+    "evaluation_labels.csv": "a5c104ca71c3120e76f4fbe50e07dd40ac55838e674763dd397b4f886ab50d32",
+    "phase2_inputs.csv": "0ba48797f3ab70f162c7aa6af7e89debf89b069948fa9385d6b6155bee14bb04",
+    "selection_manifest.csv": "701a903485887bf2d4c62d7771183debeee9c3e10f1eb335587d1b9a25caa092"
+  },
+  "phase2_handoffs": {
+    "reddit_12000_routed_id_sha256": "e852273108039cebe31ef965ad0cea484d9a61835e1b608de6fe1f1a6becaa88",
+    "mixed_emotion_300_routed_id_sha256": "a4c06972fac45e51a989f378d7daad9d64ab1354113b834a770bfd2c33df18f6",
+    "additional_reddit_9000_input_sha256": "5ea8743b66e06cdcb8b3c7288d4f173656bc5812ad89fcf833ef1c8794c66f4a",
+    "additional_reddit_9000_routed_id_sha256": "002fa35694f9da7a5f6d54703ef867fca604d564ad46b4eb67ef99c08674eb84"
+  },
+  "mixed_emotion_csv": {
+    "path": "data/mixed_emotion/mixed_emotion_stress_test_300.csv",
+    "source_version": "v2.4-neutral-clear",
+    "rows": 300,
+    "sha256": "7bf27c4361999757701fe9a45ec6bcf1aa515f7fc57751982e56af2e81f86f84"
+  }
+}
+

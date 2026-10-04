@@ -1,0 +1,29 @@
+{
+  "experiment": "mixed-llama2-direct-final-sd-v1",
+  "model": "NousResearch/Llama-2-7b-chat-hf",
+  "revision": "351844e75ed0bcbbe3f10671b3c808d2b83894ee",
+  "max_new_tokens": 1024,
+  "decoding": "greedy",
+  "base_seed": 42,
+  "load_in_4bit": true,
+  "max_rows": null,
+  "methods": [
+    "direct",
+    "sd_independent_countercheck"
+  ],
+  "routed_id_hash": "a4c06972fac45e51a989f378d7daad9d64ab1354113b834a770bfd2c33df18f6",
+  "input_sha256": "bfa7a4cb4192578f95c2dee1740b2aa579f06676173771e772cde1420d649137",
+  "implementation_sha256": "3cb5c4e0c354dd81fa1499344583cb54fc4ccfee55e25de33c1412892c25c1b6",
+  "environment": {
+    "python": "3.13.15",
+    "packages": {
+      "torch": "2.11.0+cu128",
+      "transformers": "5.17.0",
+      "accelerate": "1.15.0",
+      "bitsandbytes": "0.50.2"
+    },
+    "gpu": "NVIDIA L4"
+  },
+  "effective_tasks_sha256": "8127f81b8590519171fbf46694c6049cf2ddc7aa7bddc68918293339604def82",
+  "_source_manifest_sha256": "b16726b60348c956f4512281e8cdc6451229e46babbb6c77a38da2c86421ea1d"
+}

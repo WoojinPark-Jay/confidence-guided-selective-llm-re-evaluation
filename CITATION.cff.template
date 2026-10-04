@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated paper."
+title: "Confidence-Guided Selective LLM Re-Evaluation for Emotion Classification in Social Media"
+type: software
+version: "1.0.0"
+date-released: "YYYY-MM-DD"
+authors:
+  - family-names: "TO BE COMPLETED"
+    given-names: "TO BE COMPLETED"
+repository-code: "TO BE COMPLETED"
+doi: "TO BE COMPLETED"
+

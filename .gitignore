@@ -1,0 +1,24 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
+
+# Never commit private/raw Reddit text, model weights, or runtime caches.
+data/private/
+data/raw/
+models/weights/
+outputs/
+records/
+stages/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.zip
+

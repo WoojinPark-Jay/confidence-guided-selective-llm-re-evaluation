@@ -1,0 +1,69 @@
+{
+  "release_protocol": "cgslr-final-2026-10",
+  "labels": ["Depression", "Neutral", "Happy"],
+  "phase1": {
+    "base_model": "distilbert-base-uncased",
+    "selected_seed": 42,
+    "samples_per_class": 40000,
+    "split_ratios": {"train": 0.70, "validation": 0.10, "calibration": 0.10, "test": 0.10},
+    "hyperparameters": {
+      "learning_rate": 4.03677668397417e-05,
+      "batch_size": 64,
+      "epochs": 3,
+      "weight_decay": 0.001,
+      "max_length": 256
+    },
+    "temperature": 1.4801950079829693,
+    "confidence": "temperature-scaled maximum softmax probability",
+    "routing_threshold": 0.70,
+    "routing_rule": "route when calibrated confidence < 0.70",
+    "target_selective_risk": 0.05,
+    "risk_confidence_level": 0.95,
+    "minimum_accepted_calibration_examples": 1200,
+    "evaluation_precision": "fp32"
+  },
+  "phase2": {
+    "models": {
+      "llama2": {
+        "id": "NousResearch/Llama-2-7b-chat-hf",
+        "revision": "351844e75ed0bcbbe3f10671b3c808d2b83894ee",
+        "context_tokens": 4096,
+        "cot_max_new_tokens_per_call": 1024,
+        "self_discover_max_new_tokens": 1024
+      },
+      "llama3": {
+        "id": "NousResearch/Meta-Llama-3-8B-Instruct",
+        "revision": "53346005fb0ef11d3b6a83b12c895cca40156b6c",
+        "context_tokens": 8192,
+        "direct_cot_max_new_tokens_per_call": 1024,
+        "self_discover_max_new_tokens": 1536
+      }
+    },
+    "quantization": "4-bit NF4, double quantization, fp16 compute",
+    "decoding": "greedy",
+    "seed": 42,
+    "input_policy": "original title + selftext with minimal sanitization, routed cases only",
+    "self_discover_protocol": "v6c compact model-specific cached plan",
+    "self_discover_discovery_calls": 3,
+    "self_discover_execution_calls_per_post": 1,
+    "fallback": "retain Phase 1 label when Phase 2 parsing fails"
+  },
+  "contracts": {
+    "reddit_12000": {
+      "rows": 12000,
+      "routed_rows": 218,
+      "routed_id_sha256": "e852273108039cebe31ef965ad0cea484d9a61835e1b608de6fe1f1a6becaa88"
+    },
+    "mixed_emotion_300": {
+      "rows": 300,
+      "routed_rows": 86,
+      "routed_id_sha256": "a4c06972fac45e51a989f378d7daad9d64ab1354113b834a770bfd2c33df18f6"
+    },
+    "additional_reddit_9000": {
+      "rows": 9000,
+      "routed_rows": 111,
+      "routed_id_sha256": "002fa35694f9da7a5f6d54703ef867fca604d564ad46b4eb67ef99c08674eb84"
+    }
+  }
+}
+
