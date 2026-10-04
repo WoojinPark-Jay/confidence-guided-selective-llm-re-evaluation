@@ -1,0 +1,25 @@
+name: Validate reproducibility release
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Recompute released metrics
+        run: python3 scripts/reproduce_results.py
+      - name: Recompute paired statistics
+        run: python3 scripts/reproduce_statistics.py
+      - name: Validate release boundary and checksums
+        run: python3 scripts/validate_release.py
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
