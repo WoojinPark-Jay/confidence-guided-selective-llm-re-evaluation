@@ -2,6 +2,8 @@
 
 Reproducibility package for **“Confidence-Guided Selective LLM Re-Evaluation for Emotion Classification in Social Media.”**
 
+Lead authors (equal contribution): **Woojin Park** and **Sangyun Kang**.
+
 The system uses a calibrated DistilBERT classifier for Phase 1 and routes only low-confidence cases to Phase 2. Phase 2 compares Direct, chain-of-thought (CoT), and the final task-adapted SELF-DISCOVER protocol with Llama 2 and Llama 3. A parsed Phase 2 label replaces the Phase 1 prediction only for a routed case; if parsing fails, the Phase 1 label is retained.
 
 > Research use only. The labels are proxy emotion labels and are not clinical diagnoses, screening outcomes, or treatment recommendations.
@@ -88,4 +90,4 @@ It does contain the synthetic Mixed Emotion stress test, text-free row-aligned l
 
 ## Citation and license
 
-`CITATION.cff` and the final software license must be completed after the author list, DOI, repository URL, and release terms are approved. Until then, this private preparation repository is all rights reserved; see `LICENSE` and `RELEASE_CHECKLIST.md`.
+The software is released under the MIT License; see `LICENSE`. `CITATION.cff` will be finalized after the complete author list and archival DOI are approved; until then, `CITATION.cff.template` records the confirmed lead authors and remaining citation fields.

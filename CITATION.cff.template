@@ -5,8 +5,9 @@ type: software
 version: "1.0.0"
 date-released: "YYYY-MM-DD"
 authors:
-  - family-names: "TO BE COMPLETED"
-    given-names: "TO BE COMPLETED"
+  - family-names: "Park"
+    given-names: "Woojin"
+  - family-names: "Kang"
+    given-names: "Sangyun"
 repository-code: "TO BE COMPLETED"
 doi: "TO BE COMPLETED"
-

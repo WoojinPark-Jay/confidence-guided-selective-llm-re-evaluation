@@ -13,11 +13,6 @@ Raw Reddit text and LLM free-form responses are excluded because they may reprod
 
 The text-free prediction files are sufficient to reproduce every reported end-to-end accuracy, Macro F1, confusion matrix, corrected/introduced count, exact McNemar p-value, and Holm-adjusted p-value.
 
-Before public release, the authors must select one of these access routes and state it in the paper:
-
-1. deposit restricted artifacts in an approved research repository;
-2. provide a request-based access process consistent with the source platform's terms;
-3. release only the reconstruction code and manifests when redistribution is not permitted.
+This public repository releases the reconstruction code, manifests, synthetic stress test, and text-free evaluation records. It does not currently provide access to the restricted Reddit-derived artifacts or model weights. If an approved controlled-access route is established, its terms and location will be documented here and in the paper.
 
 No placeholder URL in this repository should be interpreted as an active data-access commitment.
-

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,9 +21,17 @@ def digest(path: Path) -> str:
 
 
 def main() -> None:
+    listed = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout.decode("utf-8").split("\0")
     files = [
-        path for path in ROOT.rglob("*")
-        if path.is_file() and ".git" not in path.parts and path not in EXCLUDED
+        ROOT / relative_path
+        for relative_path in listed
+        if relative_path and (ROOT / relative_path).is_file()
+        and (ROOT / relative_path) not in EXCLUDED
     ]
     lines = [f"{digest(path)}  {path.relative_to(ROOT)}" for path in sorted(files)]
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
