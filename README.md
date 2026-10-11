@@ -97,6 +97,6 @@ It does contain the synthetic Mixed Emotion stress test, text-free row-aligned l
 
 ## Citation and license
 
-The software is released under the MIT License; see `LICENSE`. `CITATION.cff` will be finalized after the complete author list and archival DOI are approved; until then, `CITATION.cff.template` records the confirmed lead authors and remaining citation fields.
+The software is released under the MIT License; see `LICENSE`. `CITATION.cff` will be finalized after the complete author list and archival DOI are approved. The current `CITATION.cff.template` records the confirmed authors Woojin Park and Sangyun Kang; two corresponding authors will be added after their names, affiliations, and contact details are approved.
 
 This research received no external funding.

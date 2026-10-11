@@ -2,11 +2,11 @@
 
 ## Required before the manuscript-linked archival release
 
-- [ ] Confirm final author list and replace `CITATION.cff.template` with `CITATION.cff`.
+- [ ] Add the two corresponding authors after their names, affiliations, and contact details are approved; then replace `CITATION.cff.template` with `CITATION.cff`.
 - [x] Record that the study received no external funding.
-- [ ] Replace the manuscript funding placeholder with the final no-funding statement.
+- [x] Remove the manuscript funding placeholder; report no external funding in submission metadata if requested by the journal.
 - [x] Apply the MIT License to the original software in this repository; externally sourced data and model artifacts remain governed by their own terms.
-- [ ] Add the final paper DOI, repository URL, and release tag.
+- [ ] Add the final paper DOI and release tag; the repository URL is already fixed in `CITATION.cff.template`.
 - [ ] Confirm Data/Code Availability language against the actual access mechanism.
 - [ ] Confirm IRB/not-human-subjects and platform-terms language with all authors or the institution.
 - [ ] Place model weights in the approved external location or document the request process.
