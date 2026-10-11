@@ -22,6 +22,12 @@
     "source_version": "v2.4-neutral-clear",
     "rows": 300,
     "sha256": "7bf27c4361999757701fe9a45ec6bcf1aa515f7fc57751982e56af2e81f86f84"
+  },
+  "mixed_emotion_phase1_outputs": {
+    "path": "data/mixed_emotion/mixed_emotion_phase1_outputs.csv",
+    "contains_text": false,
+    "rows": 300,
+    "routed_rows": 86,
+    "sha256": "55cfd42f619a7c46b0524a4d71f6c5bf73edc79277c4aed3401d283135c483b2"
   }
 }
-

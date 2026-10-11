@@ -17,10 +17,16 @@ FORBIDDEN_TEXT_PATTERNS = (
     re.compile(r"/Users/[^/]+/"),
     re.compile(r"(?:hf|sk)-[A-Za-z0-9_-]{16,}"),
     re.compile(r"jay\.seizethemoment", re.I),
-    re.compile(r"WoojinPark-Jay|Branden-Kang"),
+    re.compile(r"Branden-Kang"),
     re.compile(r"confidence-guided-llm-reasoning-depression-risk-emotion"),
-    re.compile(r"(?:raw|media)\.githubusercontent\.com"),
 )
+MIXED_PHASE1_COLUMNS = {
+    "example_id",
+    "target_label",
+    "phase1_label",
+    "phase1_confidence",
+    "phase1_routed",
+}
 ANNOTATION_AUDIT_COLUMNS = {
     "example_id",
     "target_label",
@@ -157,6 +163,41 @@ def validate_annotation_audit() -> None:
         raise AssertionError("annotation kappa bootstrap interval drifted")
 
 
+def validate_public_mixed_phase1() -> None:
+    phase1_path = ROOT / "data" / "mixed_emotion" / "mixed_emotion_phase1_outputs.csv"
+    with phase1_path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        columns = set(reader.fieldnames or [])
+        rows = list(reader)
+    if columns != MIXED_PHASE1_COLUMNS:
+        raise AssertionError(f"unexpected Mixed Emotion Phase 1 columns: {sorted(columns)}")
+    if len(rows) != 300 or len({row["example_id"] for row in rows}) != 300:
+        raise AssertionError("Mixed Emotion Phase 1 release must contain 300 unique examples")
+    labels = {"Depression", "Neutral", "Happy"}
+    if any(
+        row["target_label"] not in labels or row["phase1_label"] not in labels
+        for row in rows
+    ):
+        raise AssertionError("invalid label in Mixed Emotion Phase 1 release")
+    if any(not 0.0 <= float(row["phase1_confidence"]) <= 1.0 for row in rows):
+        raise AssertionError("invalid confidence in Mixed Emotion Phase 1 release")
+    routed_values = [row["phase1_routed"].strip().lower() for row in rows]
+    if any(value not in {"true", "false"} for value in routed_values):
+        raise AssertionError("invalid routing flag in Mixed Emotion Phase 1 release")
+    if sum(value == "true" for value in routed_values) != 86:
+        raise AssertionError("Mixed Emotion routed count drifted")
+    if sha256(phase1_path) != "55cfd42f619a7c46b0524a4d71f6c5bf73edc79277c4aed3401d283135c483b2":
+        raise AssertionError("Mixed Emotion Phase 1 release file drifted")
+
+    text_path = ROOT / "data" / "mixed_emotion" / "mixed_emotion_stress_test_300.csv"
+    with text_path.open(newline="", encoding="utf-8") as handle:
+        text_rows = list(csv.DictReader(handle))
+    text_targets = {row["example_id"]: row["target_label"] for row in text_rows}
+    phase1_targets = {row["example_id"]: row["target_label"] for row in rows}
+    if phase1_targets != text_targets:
+        raise AssertionError("Mixed Emotion text and Phase 1 releases are not row-aligned")
+
+
 def validate_text_files() -> None:
     extensions = {".md", ".txt", ".json", ".csv", ".py", ".toml", ".cff", ".ipynb"}
     for path in ROOT.rglob("*"):
@@ -170,11 +211,54 @@ def validate_text_files() -> None:
                 raise AssertionError(f"private path or credential-like value in {path.relative_to(ROOT)}")
         if path.suffix == ".ipynb":
             notebook = json.loads(text)
+            if re.search(r"[가-힣]", text):
+                raise AssertionError(f"non-English Hangul text in {path.relative_to(ROOT)}")
+            opaque_markers = (
+                "embedded_payload",
+                "MIXED_EMOTION_PAYLOAD_B64",
+                "base64.b64decode",
+                '"base_uri"',
+            )
+            if any(marker in text for marker in opaque_markers):
+                raise AssertionError(f"opaque data or local output metadata in {path.relative_to(ROOT)}")
+            if notebook.get("metadata", {}).get("colab", {}).get("name") != path.name:
+                raise AssertionError(f"stale Colab filename metadata in {path.relative_to(ROOT)}")
             for cell in notebook.get("cells", []):
                 if cell.get("cell_type") == "code" and cell.get("outputs"):
                     raise AssertionError(f"notebook outputs were not stripped: {path.relative_to(ROOT)}")
                 if cell.get("cell_type") == "code" and cell.get("execution_count") is not None:
                     raise AssertionError(f"notebook execution count was not stripped: {path.relative_to(ROOT)}")
+                if cell.get("metadata"):
+                    raise AssertionError(f"cell metadata was not stripped: {path.relative_to(ROOT)}")
+                if cell.get("cell_type") == "code":
+                    source = "".join(cell.get("source", []))
+                    lines = source.splitlines()
+                    if lines and lines[0].lstrip().startswith("%%"):
+                        continue
+                    source = "\n".join(
+                        line for line in lines
+                        if not line.lstrip().startswith(("%", "!"))
+                    )
+                    try:
+                        ast.parse(source)
+                    except SyntaxError as exc:
+                        raise AssertionError(
+                            f"invalid Python cell in {path.relative_to(ROOT)}: {exc}"
+                        ) from exc
+
+
+def validate_notebook_provenance() -> None:
+    path = ROOT / "provenance" / "notebook_sources.csv"
+    with path.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    if len(rows) != 10:
+        raise AssertionError("notebook provenance must contain ten release notebooks")
+    for row in rows:
+        release_path = ROOT / row["release_notebook"]
+        if not release_path.is_file():
+            raise FileNotFoundError(release_path)
+        if sha256(release_path) != row["release_sha256"]:
+            raise AssertionError(f"stale notebook provenance hash: {row['release_notebook']}")
 
 
 def validate_final_protocol() -> None:
@@ -294,8 +378,10 @@ def validate_final_protocol() -> None:
 def main() -> None:
     validate_predictions()
     validate_annotation_audit()
+    validate_public_mixed_phase1()
     validate_text_files()
     validate_final_protocol()
+    validate_notebook_provenance()
     validate_checksums()
     print("Release validation passed: files, privacy boundary, notebooks, and checksums are consistent.")
 

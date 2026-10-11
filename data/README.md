@@ -4,6 +4,8 @@
 
 `mixed_emotion/mixed_emotion_stress_test_300.csv` is the final 300-example synthetic stress test used by the released pipeline. It is balanced across Depression, Neutral, and Happy proxy labels and was excluded from Phase 1 training, model validation, calibration, and threshold selection.
 
+`mixed_emotion/mixed_emotion_phase1_outputs.csv` contains only the stable example ID, prespecified target, frozen Phase 1 prediction, calibrated confidence, and routing indicator for the same 300 synthetic examples. It contains no text. The release notebooks join this file to the public synthetic text by `example_id` and `target_label` after independently verifying both file hashes. This transparent pair replaces the former opaque compressed notebook payload.
+
 `mixed_emotion/mixed_emotion_annotation_audit.csv` contains anonymized, case-level results from two independent research annotators. It includes the prespecified target, each assigned label and confidence rating, and an agreement flag. Annotator names, account details, randomized presentation order, and internal workspace links are excluded. The audit was descriptive: there was no adjudication and the prespecified targets were not changed.
 
 ## Reddit evaluations
@@ -28,6 +30,7 @@ Do not map a cleaned Phase 1 `text` column to `phase2_original_text`. The model 
 The release notebooks never contain account names, shared-link URLs, or private Drive file IDs.
 
 - Notebook 01 reads the authorized source table from `PRIMARY_DATA_PATH`, or from an explicitly supplied `CGSLR_PRIMARY_DATA_URL`.
+- Notebooks 05--08 reconstruct the public Mixed Emotion Phase 1 handoff from the two hash-verified release CSVs described above.
 - Notebook 08 reads the routed Reddit Phase 2 export from its documented Drive path. An authorized URL is optional through `CGSLR_PHASE1_INPUT_URL` after changing the dataset contract from `drive` to `url`.
 - Notebook 09 first reuses a verified extracted bundle already present in Drive. If it must retrieve the three-part restricted bundle, provide `CGSLR_ASSET_PART1_FILE_ID`, `CGSLR_ASSET_PART2_FILE_ID`, and `CGSLR_ASSET_PART3_FILE_ID` as Colab Secrets or environment variables.
 
