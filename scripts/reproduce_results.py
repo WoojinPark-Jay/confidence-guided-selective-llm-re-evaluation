@@ -13,13 +13,18 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from cgslr.metrics import summarize_rows  # noqa: E402
 
+PREDICTION_COLUMNS = {"example_id", "target_label", "phase1_label", "final_label"}
+
 
 def load_csv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8-sig") as handle:
-        rows = list(csv.DictReader(handle))
-    ids = [row["example_id"] for row in rows]
-    if len(ids) != len(set(ids)):
-        raise ValueError(f"duplicate example_id in {path}")
+        reader = csv.DictReader(handle)
+        if set(reader.fieldnames or []) != PREDICTION_COLUMNS:
+            raise ValueError(f"unexpected prediction columns in {path}")
+        rows = list(reader)
+    ids = [row["example_id"].strip() for row in rows]
+    if any(not value for value in ids) or len(ids) != len(set(ids)):
+        raise ValueError(f"empty or duplicate example_id in {path}")
     return rows
 
 
@@ -56,4 +61,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

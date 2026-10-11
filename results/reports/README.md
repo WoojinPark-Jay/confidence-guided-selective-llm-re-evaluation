@@ -14,12 +14,18 @@ Llama 3 SELF-DISCOVER had the highest observed Reddit accuracy, but its differen
 
 ## Parsing fallback
 
-Unparsed routed responses retain the Phase 1 label. They are not regenerated, manually relabeled, or automatically counted as wrong. The parsing-failure totals are recorded in `row_verified_metrics.csv` and `predictions/manifest.csv`.
+Unparsed routed responses retain the Phase 1 label. They are not regenerated, manually relabeled, or automatically counted as wrong. The parsing-failure totals are recorded in `results/reports/row_verified_metrics.csv` and `results/predictions/manifest.csv`.
+
+## Measured generation workload
+
+`additional9000_generation_workload.csv` records the measured generation region for the same 111 routed posts in the separately held 9,000-post evaluation. The values exclude model loading, Phase 1 inference, tokenization, and file I/O, and therefore must not be interpreted as end-to-end service latency or monetary cost.
 
 ## Reproduce
 
 ```bash
 python3 scripts/reproduce_results.py
 python3 scripts/reproduce_statistics.py
+python3 scripts/reproduce_annotation_audit.py
+python3 scripts/validate_release.py
 python3 -m unittest discover -s tests -v
 ```

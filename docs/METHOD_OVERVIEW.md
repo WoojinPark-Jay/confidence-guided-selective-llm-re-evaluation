@@ -24,7 +24,7 @@ A fixed multi-turn dialogue elicits acknowledgement, text analysis, an independe
 
 ### SELF-DISCOVER v6c
 
-SELECT chooses relevant checks from an 18-module emotion-oriented bank. ADAPT specializes them to the annotation task. IMPLEMENT compresses them into a model-specific plan of at most three steps. These three calls happen at task level, without an evaluation post or target label. The resulting plan is cached.
+SELECT chooses relevant checks from an 18-module emotion-oriented bank. ADAPT specializes them to the annotation task. IMPLEMENT requests a compact model-specific plan of at most three steps. These three calls happen at task level, without an evaluation post or target label. The resulting model output is cached without post-editing; the released Llama 2 output does not fully follow the requested compact structure.
 
 For every routed post, the model receives its cached plan, the shared class policy, fixed evidence checks, and the post text. It generates a fresh evidence-based analysis and exactly one final label. Llama 2 and Llama 3 retain separate plans; each model's plan is reused across Reddit and Mixed Emotion.
 

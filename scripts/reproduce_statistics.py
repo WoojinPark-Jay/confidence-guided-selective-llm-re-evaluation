@@ -11,6 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+PREDICTION_COLUMNS = {"example_id", "target_label", "phase1_label", "final_label"}
+LABELS = {"Depression", "Neutral", "Happy"}
 
 from cgslr.metrics import exact_mcnemar_p, holm_adjust  # noqa: E402
 
@@ -24,7 +26,19 @@ def read_manifest() -> list[dict[str, str]]:
 
 def read_predictions(relative: str) -> dict[str, dict[str, str]]:
     with (ROOT / relative).open(newline="", encoding="utf-8-sig") as handle:
-        rows = list(csv.DictReader(handle))
+        reader = csv.DictReader(handle)
+        if set(reader.fieldnames or []) != PREDICTION_COLUMNS:
+            raise ValueError(f"unexpected prediction columns in {relative}")
+        rows = list(reader)
+    identifiers = [row["example_id"].strip() for row in rows]
+    if any(not value for value in identifiers) or len(set(identifiers)) != len(identifiers):
+        raise ValueError(f"empty or duplicate example_id in {relative}")
+    if any(
+        row[column] not in LABELS
+        for row in rows
+        for column in ("target_label", "phase1_label", "final_label")
+    ):
+        raise ValueError(f"invalid label in {relative}")
     return {row["example_id"]: row for row in rows}
 
 
@@ -111,4 +125,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

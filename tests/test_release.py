@@ -36,6 +36,43 @@ class ReleaseTests(unittest.TestCase):
             self.assertAlmostEqual(summary["accuracy_percent"], float(entry["accuracy_percent"]))
             self.assertAlmostEqual(summary["macro_f1_percent"], float(entry["macro_f1_percent"]))
 
+    def test_prediction_ids_and_phase1_contracts_align(self):
+        manifest_path = ROOT / "results" / "predictions" / "manifest.csv"
+        with manifest_path.open(newline="", encoding="utf-8") as handle:
+            entries = list(csv.DictReader(handle))
+        contracts = {}
+        labels = {"Depression", "Neutral", "Happy"}
+        for entry in entries:
+            with (ROOT / entry["path"]).open(newline="", encoding="utf-8-sig") as handle:
+                rows = list(csv.DictReader(handle))
+            ids = [row["example_id"] for row in rows]
+            self.assertEqual(len(ids), len(set(ids)))
+            self.assertTrue(all(ids))
+            self.assertTrue(
+                all(
+                    row[column] in labels
+                    for row in rows
+                    for column in ("target_label", "phase1_label", "final_label")
+                )
+            )
+            contract = {
+                row["example_id"]: (row["target_label"], row["phase1_label"])
+                for row in rows
+            }
+            if entry["dataset"] in contracts:
+                self.assertEqual(contract, contracts[entry["dataset"]])
+            else:
+                contracts[entry["dataset"]] = contract
+
+    def test_public_mixed_phase1_contract(self):
+        path = ROOT / "data" / "mixed_emotion" / "mixed_emotion_phase1_outputs.csv"
+        with path.open(newline="", encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        self.assertEqual(len(rows), 300)
+        self.assertEqual(len({row["example_id"] for row in rows}), 300)
+        self.assertEqual(sum(row["phase1_routed"].lower() == "true" for row in rows), 86)
+        self.assertTrue(all(0.0 <= float(row["phase1_confidence"]) <= 1.0 for row in rows))
+
     def test_mixed_emotion_annotation_audit(self):
         report_path = ROOT / "results" / "reports" / "mixed_emotion_annotation_audit.json"
         report = json.loads(report_path.read_text(encoding="utf-8"))

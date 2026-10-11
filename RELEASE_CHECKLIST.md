@@ -9,11 +9,13 @@
 - [ ] Add the final paper DOI and release tag; the repository URL is already fixed in `CITATION.cff.template`.
 - [ ] Confirm Data/Code Availability language against the actual access mechanism.
 - [ ] Confirm IRB/not-human-subjects and platform-terms language with all authors or the institution.
+- [ ] Confirm the distribution license for the original synthetic dataset and anonymized annotation-audit records.
 - [ ] Place model weights in the approved external location or document the request process.
 - [x] Confirm no raw Reddit text or free-form Reddit-linked generations are tracked.
 - [x] Release anonymized Mixed Emotion annotation labels, confidence ratings, and a reproducible reliability report.
-- [ ] Run all validation commands from a clean clone.
-- [ ] Review every notebook cell for output, personal paths, tokens, and obsolete result claims.
+- [x] Run all validation commands from a clean clone after the public-release audit.
+- [x] Review every notebook cell for output, personal paths, tokens, opaque payloads, and obsolete result claims.
+- [x] Audit all tracked files and reachable Git history for credentials, personal paths, raw Reddit text, and accidental private artifacts.
 - [ ] Tag the exact public release used by the submitted manuscript.
 
 ## Automated gate

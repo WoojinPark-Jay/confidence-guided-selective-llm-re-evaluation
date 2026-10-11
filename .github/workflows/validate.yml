@@ -19,6 +19,8 @@ jobs:
         run: python3 scripts/reproduce_results.py
       - name: Recompute paired statistics
         run: python3 scripts/reproduce_statistics.py
+      - name: Recompute annotation audit
+        run: python3 scripts/reproduce_annotation_audit.py
       - name: Validate release boundary and checksums
         run: python3 scripts/validate_release.py
       - name: Run unit tests

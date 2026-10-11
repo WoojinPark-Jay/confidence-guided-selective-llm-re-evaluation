@@ -17,6 +17,6 @@ No Reddit text, prompt, free-form response, or model rationale is present. `mani
 - `sd_vs_baselines_paired_statistics.csv`: SELF-DISCOVER versus Direct and CoT on the same rows.
 - condition-specific confusion matrices and class reports.
 - `additional9000_audit_evidence.json`: row/call verification evidence for the separate 9,000-post evaluation.
+- `additional9000_generation_workload.csv`: measured generation-region calls, tokens, and time for the same 111 routed posts.
 
 Run `python3 scripts/reproduce_results.py` to independently recompute the point metrics from the released prediction files.
-

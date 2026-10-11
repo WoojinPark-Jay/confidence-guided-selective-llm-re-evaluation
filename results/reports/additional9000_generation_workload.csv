@@ -1,0 +1,4 @@
+protocol,routed_posts,generation_calls,calls_per_routed_post,input_tokens,generated_tokens,generation_time_seconds,generation_seconds_per_routed_post,new_plan_discovery_calls
+Direct,111,111,1.0,44374,679,54.85973342199998,0.4942318326306304,0
+CoT,111,555,5.0,332544,56793,3116.394805240004,28.075628876036074,0
+SELF-DISCOVER,111,111,1.0,113638,47884,2568.494655098005,23.13959148736941,0

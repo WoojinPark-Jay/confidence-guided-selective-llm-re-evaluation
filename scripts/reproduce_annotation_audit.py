@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUT = ROOT / "data" / "mixed_emotion" / "mixed_emotion_annotation_audit.csv"
 OUTPUT = ROOT / "results" / "reports" / "mixed_emotion_annotation_audit.json"
 LABELS = ("Depression", "Neutral", "Happy")
+CONFIDENCE_LEVELS = {"Low", "Medium", "High"}
+EXPECTED_COLUMNS = {
+    "example_id", "target_label", "annotator_a_label", "annotator_a_confidence",
+    "annotator_b_label", "annotator_b_confidence", "agreement",
+}
 
 
 def cohen_kappa(pairs: list[tuple[str, str]]) -> tuple[float, float, float]:
@@ -50,11 +55,31 @@ def bootstrap_kappa(
 
 def main() -> None:
     with INPUT.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
+        reader = csv.DictReader(handle)
+        if set(reader.fieldnames or []) != EXPECTED_COLUMNS:
+            raise AssertionError("unexpected annotation-audit columns")
+        rows = list(reader)
     if len(rows) != 300:
         raise AssertionError(f"expected 300 audit rows, found {len(rows)}")
-    if len({row["example_id"] for row in rows}) != 300:
-        raise AssertionError("annotation audit contains duplicate example_id values")
+    identifiers = [row["example_id"].strip() for row in rows]
+    if any(not value for value in identifiers) or len(set(identifiers)) != 300:
+        raise AssertionError("annotation audit contains empty or duplicate example_id values")
+    for row in rows:
+        if any(
+            row[column] not in LABELS
+            for column in ("target_label", "annotator_a_label", "annotator_b_label")
+        ):
+            raise AssertionError(f"invalid annotation label at {row['example_id']}")
+        if any(
+            row[column] not in CONFIDENCE_LEVELS
+            for column in ("annotator_a_confidence", "annotator_b_confidence")
+        ):
+            raise AssertionError(f"invalid confidence level at {row['example_id']}")
+        expected_agreement = (
+            "yes" if row["annotator_a_label"] == row["annotator_b_label"] else "no"
+        )
+        if row["agreement"] != expected_agreement:
+            raise AssertionError(f"agreement flag mismatch at {row['example_id']}")
 
     pairs = [(row["annotator_a_label"], row["annotator_b_label"]) for row in rows]
     observed, expected, kappa = cohen_kappa(pairs)

@@ -22,3 +22,4 @@ Expected files and SHA-256 values:
 
 The notebooks load these models in 4-bit NF4 with double quantization and fp16 compute. Access is governed by the model repositories' own licenses and terms.
 
+The release notebooks set `trust_remote_code=True` while pinning each model to the exact revision above. A rerun therefore trusts code from those pinned model-repository revisions; reviewers should inspect the upstream revision and its license before execution.

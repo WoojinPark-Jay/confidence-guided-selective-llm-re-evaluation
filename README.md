@@ -69,7 +69,7 @@ python3 -m unittest discover -s tests -v
 
 The commands fail on a row-count mismatch, duplicate ID, invalid label, unexpected text-bearing column, metric mismatch, checksum mismatch, or leaked absolute user path.
 
-The same gate runs in GitHub Actions on every push and pull request. Locally, all four checks can also be run with `make verify`.
+The same gate runs in GitHub Actions on every push and pull request. Locally, the full verification suite can also be run with `make verify`.
 
 ## Re-running inference
 
@@ -91,9 +91,9 @@ The repository does **not** contain:
 - Hugging Face model weights;
 - the final fine-tuned DistilBERT weight file;
 - free-form LLM generations tied to individual Reddit posts;
-- local Drive paths, account credentials, or API tokens.
+- personal account paths, private Drive file IDs, account credentials, or API tokens.
 
-It does contain the synthetic Mixed Emotion stress test, text-free row-aligned labels, exact prompts, cached plans, model revisions, file hashes, and all aggregate evidence required to verify the reported metrics. See `DATA_AVAILABILITY.md` for the release boundary.
+It does contain the synthetic Mixed Emotion stress test, text-free row-aligned labels, exact prompts, cached plans, model revisions, file hashes, measured generation-workload summaries, and all aggregate evidence required to verify the reported metrics. See `DATA_AVAILABILITY.md` for the release boundary and `docs/PUBLIC_RELEASE_AUDIT.md` for the repository-wide audit.
 
 ## Citation and license
 

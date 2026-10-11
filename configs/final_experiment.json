@@ -28,7 +28,7 @@
         "id": "NousResearch/Llama-2-7b-chat-hf",
         "revision": "351844e75ed0bcbbe3f10671b3c808d2b83894ee",
         "context_tokens": 4096,
-        "cot_max_new_tokens_per_call": 1024,
+        "direct_cot_max_new_tokens_per_call": 1024,
         "self_discover_max_new_tokens": 1024
       },
       "llama3": {
@@ -66,4 +66,3 @@
     }
   }
 }
-

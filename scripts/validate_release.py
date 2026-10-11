@@ -8,6 +8,7 @@ import ast
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,7 +16,16 @@ ALLOWED_PREDICTION_COLUMNS = {"example_id", "target_label", "phase1_label", "fin
 FORBIDDEN_COLUMN_PARTS = {"text", "prompt", "response", "answer", "reasoning", "selftext", "title"}
 FORBIDDEN_TEXT_PATTERNS = (
     re.compile(r"/Users/[^/]+/"),
+    re.compile(r"/home/[^/]+/"),
+    re.compile(r"[A-Za-z]:\\\\Users\\\\[^\\\\]+\\\\"),
     re.compile(r"(?:hf|sk)-[A-Za-z0-9_-]{16,}"),
+    re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}"),
+    re.compile(r"AIza[0-9A-Za-z_-]{30,}"),
+    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+    re.compile(r"drive\.google\.com/(?:file/d/|open\?id=)", re.I),
+    re.compile(r"https?://(?:www\.)?reddit\.com/(?:r|u|user)/", re.I),
     re.compile(r"jay\.seizethemoment", re.I),
     re.compile(r"Branden-Kang"),
     re.compile(r"confidence-guided-llm-reasoning-depression-risk-emotion"),
@@ -36,6 +46,7 @@ ANNOTATION_AUDIT_COLUMNS = {
     "annotator_b_confidence",
     "agreement",
 }
+LABELS = {"Depression", "Neutral", "Happy"}
 
 
 def sha256(path: Path) -> str:
@@ -77,6 +88,14 @@ def validate_predictions() -> None:
         entries = list(csv.DictReader(handle))
     if len(entries) != 15:
         raise AssertionError(f"expected 15 final conditions, found {len(entries)}")
+    condition_keys = [(row["dataset"], row["model"], row["method"]) for row in entries]
+    paths = [row["path"] for row in entries]
+    if len(set(condition_keys)) != len(condition_keys):
+        raise AssertionError("duplicate condition in prediction manifest")
+    if len(set(paths)) != len(paths):
+        raise AssertionError("duplicate prediction path in manifest")
+
+    dataset_contracts: dict[str, dict[str, tuple[str, str]]] = {}
     for entry in entries:
         path = ROOT / entry["path"]
         if not path.is_file():
@@ -91,6 +110,26 @@ def validate_predictions() -> None:
             raise AssertionError(f"text-bearing column in {path}")
         if len(rows) != int(entry["n"]):
             raise AssertionError(f"row count mismatch in {path}")
+        example_ids = [row["example_id"].strip() for row in rows]
+        if any(not value for value in example_ids):
+            raise AssertionError(f"empty example_id in {path}")
+        if len(set(example_ids)) != len(example_ids):
+            raise AssertionError(f"duplicate example_id in {path}")
+        if any(
+            row[column] not in LABELS
+            for row in rows
+            for column in ("target_label", "phase1_label", "final_label")
+        ):
+            raise AssertionError(f"invalid label in {path}")
+        contract = {
+            row["example_id"]: (row["target_label"], row["phase1_label"])
+            for row in rows
+        }
+        previous = dataset_contracts.setdefault(entry["dataset"], contract)
+        if contract != previous:
+            raise AssertionError(
+                f"target or Phase 1 labels are not aligned within {entry['dataset']}"
+            )
         if entry["method"] == "SELF-DISCOVER":
             expected_plan = {
                 "Llama 2": "ac645d4ab0d0b07883493ac21263cda8540c364ed4f6174b338e33bbd8b104ab",
@@ -106,13 +145,39 @@ def validate_checksums() -> None:
     manifest = ROOT / "provenance" / "release_checksums.sha256"
     if not manifest.is_file():
         raise FileNotFoundError(manifest)
+    listed_paths: set[str] = set()
     for line in manifest.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         expected, relative = line.split("  ", 1)
+        relative_path = Path(relative)
+        if relative_path.is_absolute() or ".." in relative_path.parts:
+            raise AssertionError(f"unsafe checksum path: {relative}")
+        if relative in listed_paths:
+            raise AssertionError(f"duplicate checksum entry: {relative}")
+        listed_paths.add(relative)
         path = ROOT / relative
         if not path.is_file() or sha256(path) != expected:
             raise AssertionError(f"checksum mismatch: {relative}")
+
+    if (ROOT / ".git").exists():
+        tracked = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        ).stdout.decode("utf-8").split("\0")
+        expected_paths = {
+            relative for relative in tracked
+            if relative and relative != "provenance/release_checksums.sha256"
+        }
+        missing = expected_paths - listed_paths
+        extra = listed_paths - expected_paths
+        if missing or extra:
+            raise AssertionError(
+                "checksum inventory mismatch; "
+                f"missing={sorted(missing)}, extra={sorted(extra)}"
+            )
 
 
 def validate_annotation_audit() -> None:
@@ -196,6 +261,42 @@ def validate_public_mixed_phase1() -> None:
     phase1_targets = {row["example_id"]: row["target_label"] for row in rows}
     if phase1_targets != text_targets:
         raise AssertionError("Mixed Emotion text and Phase 1 releases are not row-aligned")
+
+
+def validate_workload_report() -> None:
+    path = ROOT / "results" / "reports" / "additional9000_generation_workload.csv"
+    expected_columns = {
+        "protocol", "routed_posts", "generation_calls", "calls_per_routed_post",
+        "input_tokens", "generated_tokens", "generation_time_seconds",
+        "generation_seconds_per_routed_post", "new_plan_discovery_calls",
+    }
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if set(reader.fieldnames or []) != expected_columns:
+            raise AssertionError("unexpected generation-workload columns")
+        rows = {row["protocol"]: row for row in reader}
+    expected = {
+        "Direct": (111, 111, 44374, 679, 54.85973342199998),
+        "CoT": (111, 555, 332544, 56793, 3116.394805240004),
+        "SELF-DISCOVER": (111, 111, 113638, 47884, 2568.494655098005),
+    }
+    if set(rows) != set(expected):
+        raise AssertionError("generation-workload protocol set drifted")
+    for protocol, values in expected.items():
+        row = rows[protocol]
+        actual = (
+            int(row["routed_posts"]), int(row["generation_calls"]),
+            int(row["input_tokens"]), int(row["generated_tokens"]),
+            float(row["generation_time_seconds"]),
+        )
+        if actual[:4] != values[:4] or abs(actual[4] - values[4]) > 1e-12:
+            raise AssertionError(f"generation-workload values drifted for {protocol}")
+        if int(row["new_plan_discovery_calls"]) != 0:
+            raise AssertionError(f"unexpected discovery calls for {protocol}")
+        if abs(float(row["calls_per_routed_post"]) - values[1] / values[0]) > 1e-12:
+            raise AssertionError(f"calls/post mismatch for {protocol}")
+        if abs(float(row["generation_seconds_per_routed_post"]) - values[4] / values[0]) > 1e-12:
+            raise AssertionError(f"time/post mismatch for {protocol}")
 
 
 def validate_text_files() -> None:
@@ -379,6 +480,7 @@ def main() -> None:
     validate_predictions()
     validate_annotation_audit()
     validate_public_mixed_phase1()
+    validate_workload_report()
     validate_text_files()
     validate_final_protocol()
     validate_notebook_provenance()
