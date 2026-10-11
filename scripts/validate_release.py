@@ -21,6 +21,15 @@ FORBIDDEN_TEXT_PATTERNS = (
     re.compile(r"confidence-guided-llm-reasoning-depression-risk-emotion"),
     re.compile(r"(?:raw|media)\.githubusercontent\.com"),
 )
+ANNOTATION_AUDIT_COLUMNS = {
+    "example_id",
+    "target_label",
+    "annotator_a_label",
+    "annotator_a_confidence",
+    "annotator_b_label",
+    "annotator_b_confidence",
+    "agreement",
+}
 
 
 def sha256(path: Path) -> str:
@@ -98,6 +107,54 @@ def validate_checksums() -> None:
         path = ROOT / relative
         if not path.is_file() or sha256(path) != expected:
             raise AssertionError(f"checksum mismatch: {relative}")
+
+
+def validate_annotation_audit() -> None:
+    path = ROOT / "data" / "mixed_emotion" / "mixed_emotion_annotation_audit.csv"
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        columns = set(reader.fieldnames or [])
+        rows = list(reader)
+    if columns != ANNOTATION_AUDIT_COLUMNS:
+        raise AssertionError(f"unexpected annotation-audit columns: {sorted(columns)}")
+    if len(rows) != 300 or len({row["example_id"] for row in rows}) != 300:
+        raise AssertionError("annotation audit must contain 300 unique examples")
+    labels = {"Depression", "Neutral", "Happy"}
+    confidence = {"Low", "Medium", "High"}
+    for row in rows:
+        if any(row[key] not in labels for key in ("target_label", "annotator_a_label", "annotator_b_label")):
+            raise AssertionError(f"invalid annotation label at {row['example_id']}")
+        if any(row[key] not in confidence for key in ("annotator_a_confidence", "annotator_b_confidence")):
+            raise AssertionError(f"invalid annotation confidence at {row['example_id']}")
+        expected = "yes" if row["annotator_a_label"] == row["annotator_b_label"] else "no"
+        if row["agreement"] != expected:
+            raise AssertionError(f"agreement flag mismatch at {row['example_id']}")
+    if sum(row["agreement"] == "yes" for row in rows) != 277:
+        raise AssertionError("annotation agreement count drifted")
+
+    report = json.loads(
+        (ROOT / "results" / "reports" / "mixed_emotion_annotation_audit.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    expected_values = {
+        "n": 300,
+        "initial_agreements": 277,
+        "initial_disagreements": 23,
+        "annotator_a_vs_target": 288,
+        "annotator_b_vs_target": 289,
+        "agreed_labels_matching_target": 277,
+        "direct_depression_happy_disagreements": 0,
+        "disagreements_with_at_least_one_low_confidence_rating": 23,
+        "adjudication_performed": False,
+        "targets_modified_after_audit": False,
+    }
+    for key, value in expected_values.items():
+        if report.get(key) != value:
+            raise AssertionError(f"annotation report mismatch: {key}")
+    ci = report.get("kappa_bootstrap", {}).get("ci", [])
+    if len(ci) != 2 or [round(value, 4) for value in ci] != [0.8350, 0.9294]:
+        raise AssertionError("annotation kappa bootstrap interval drifted")
 
 
 def validate_text_files() -> None:
@@ -236,6 +293,7 @@ def validate_final_protocol() -> None:
 
 def main() -> None:
     validate_predictions()
+    validate_annotation_audit()
     validate_text_files()
     validate_final_protocol()
     validate_checksums()

@@ -3,12 +3,15 @@
 ## Required before the manuscript-linked archival release
 
 - [ ] Confirm final author list and replace `CITATION.cff.template` with `CITATION.cff`.
+- [x] Record that the study received no external funding.
+- [ ] Replace the manuscript funding placeholder with the final no-funding statement.
 - [x] Apply the MIT License to the original software in this repository; externally sourced data and model artifacts remain governed by their own terms.
 - [ ] Add the final paper DOI, repository URL, and release tag.
 - [ ] Confirm Data/Code Availability language against the actual access mechanism.
 - [ ] Confirm IRB/not-human-subjects and platform-terms language with all authors or the institution.
 - [ ] Place model weights in the approved external location or document the request process.
 - [x] Confirm no raw Reddit text or free-form Reddit-linked generations are tracked.
+- [x] Release anonymized Mixed Emotion annotation labels, confidence ratings, and a reproducible reliability report.
 - [ ] Run all validation commands from a clean clone.
 - [ ] Review every notebook cell for output, personal paths, tokens, and obsolete result claims.
 - [ ] Tag the exact public release used by the submitted manuscript.
@@ -18,6 +21,7 @@
 ```bash
 python3 scripts/reproduce_results.py
 python3 scripts/reproduce_statistics.py
+python3 scripts/reproduce_annotation_audit.py
 python3 scripts/validate_release.py
 python3 -m unittest discover -s tests -v
 git status --short

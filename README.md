@@ -49,6 +49,12 @@ All values below were recomputed from row-aligned final predictions. Accuracy an
 
 The final Llama 3 SELF-DISCOVER pipeline improved over Phase 1 on the 12,000-post Reddit test set and the separately held 9,000-post set. Its observed advantage over Direct and CoT on Reddit was small and not statistically distinguishable in the paired protocol-to-protocol tests. On the controlled Mixed Emotion stress test, SELF-DISCOVER was higher than Direct and CoT for both Llama models. See `results/reports/` for exact McNemar tests, Holm adjustments, and confidence intervals.
 
+## Independent annotation audit
+
+Two research annotators who were not involved in generating the Mixed Emotion examples or developing the Phase 2 prompts independently labeled all 300 examples. They received only the post text and shared three-class policy; original targets, scenario metadata, model outputs, and the other annotator's responses were withheld. Initial agreement was 277/300 (92.33%), with unweighted Cohen's kappa of 0.8847. Annotators A and B matched the prespecified targets on 288/300 (96.00%) and 289/300 (96.33%) examples. No adjudication or post-audit relabeling was performed.
+
+The anonymized case-level labels and confidence ratings are in `data/mixed_emotion/mixed_emotion_annotation_audit.csv`. Run `python3 scripts/reproduce_annotation_audit.py` to regenerate the aggregate report and bootstrap interval.
+
 ## Quick verification
 
 Only Python 3.10+ is needed to reproduce the table from the text-free prediction files.
@@ -56,6 +62,7 @@ Only Python 3.10+ is needed to reproduce the table from the text-free prediction
 ```bash
 python3 scripts/reproduce_results.py
 python3 scripts/reproduce_statistics.py
+python3 scripts/reproduce_annotation_audit.py
 python3 scripts/validate_release.py
 python3 -m unittest discover -s tests -v
 ```
@@ -91,3 +98,5 @@ It does contain the synthetic Mixed Emotion stress test, text-free row-aligned l
 ## Citation and license
 
 The software is released under the MIT License; see `LICENSE`. `CITATION.cff` will be finalized after the complete author list and archival DOI are approved; until then, `CITATION.cff.template` records the confirmed lead authors and remaining citation fields.
+
+This research received no external funding.

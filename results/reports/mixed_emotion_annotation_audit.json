@@ -1,0 +1,43 @@
+{
+  "n": 300,
+  "initial_agreements": 277,
+  "initial_disagreements": 23,
+  "raw_agreement": 0.9233333333333333,
+  "expected_agreement": 0.33513333333333334,
+  "unweighted_cohen_kappa": 0.8846886593803269,
+  "kappa_bootstrap": {
+    "method": "paired-case percentile bootstrap",
+    "resamples": 10000,
+    "seed": 42,
+    "confidence_level": 0.95,
+    "ci": [
+      0.8349993811571734,
+      0.92942845872577
+    ]
+  },
+  "annotator_a_vs_target": 288,
+  "annotator_b_vs_target": 289,
+  "agreed_labels_matching_target": 277,
+  "agreed_cases": 277,
+  "direct_depression_happy_disagreements": 0,
+  "disagreements_with_at_least_one_low_confidence_rating": 23,
+  "confusion_matrix_annotator_a_rows_annotator_b_columns": {
+    "Depression": {
+      "Depression": 88,
+      "Neutral": 10,
+      "Happy": 0
+    },
+    "Neutral": {
+      "Depression": 2,
+      "Neutral": 100,
+      "Happy": 10
+    },
+    "Happy": {
+      "Depression": 0,
+      "Neutral": 1,
+      "Happy": 89
+    }
+  },
+  "adjudication_performed": false,
+  "targets_modified_after_audit": false
+}

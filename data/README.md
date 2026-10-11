@@ -4,6 +4,8 @@
 
 `mixed_emotion/mixed_emotion_stress_test_300.csv` is the final 300-example synthetic stress test used by the released pipeline. It is balanced across Depression, Neutral, and Happy proxy labels and was excluded from Phase 1 training, model validation, calibration, and threshold selection.
 
+`mixed_emotion/mixed_emotion_annotation_audit.csv` contains anonymized, case-level results from two independent research annotators. It includes the prespecified target, each assigned label and confidence rating, and an agreement flag. Annotator names, account details, randomized presentation order, and internal workspace links are excluded. The audit was descriptive: there was no adjudication and the prespecified targets were not changed.
+
 ## Reddit evaluations
 
 The Reddit source corpus and routed original text are intentionally absent. To run the notebooks, provide a Phase 1 table with the schema below:

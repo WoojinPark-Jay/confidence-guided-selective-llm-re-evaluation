@@ -8,6 +8,8 @@ For each evaluation post, calibrated confidence is the maximum temperature-scale
 
 The 1,200-example minimum applies only to threshold selection on the 12,000-example calibration split. It does not apply to the 300-example Mixed Emotion set, which is used only after the routing policy has been frozen.
 
+At the selected threshold of `0.70`, the calibration accepted-set upper risk was 2.162%, below the 5% constraint. The risk constraint was therefore non-binding at the lower boundary of the prespecified `0.70-1.00` grid. Threshold `0.70` was selected because it provided the greatest coverage among the evaluated feasible candidates; it is grid-floor-bound within the tested range and is not presented as an unconstrained optimum.
+
 ## Phase 2: selective re-evaluation
 
 Routed cases are re-evaluated using minimally sanitized original text so that sentence boundaries, speaker attribution, temporal shifts, and the emotional trajectory remain available. The target label is never included in an inference prompt.
@@ -30,3 +32,6 @@ For every routed post, the model receives its cached plan, the shared class poli
 
 Accepted posts retain their Phase 1 label. Routed posts use a parsed Phase 2 label. If parsing fails, they retain the Phase 1 label. Metrics are computed after recombining both groups over all rows, so a method is credited for corrections and penalized for newly introduced errors.
 
+## Mixed Emotion annotation audit
+
+Two research annotators who did not participate in dataset generation or Phase 2 prompt development independently labeled all 300 synthetic examples. Original targets, generation metadata, model outputs, and the other annotator's responses were withheld. Initial labels agreed on 277/300 examples (92.33%; unweighted Cohen's kappa 0.8847). No adjudication or target modification followed the audit. The released case-level file contains anonymized labels and confidence ratings, and `scripts/reproduce_annotation_audit.py` regenerates the reported reliability statistics.

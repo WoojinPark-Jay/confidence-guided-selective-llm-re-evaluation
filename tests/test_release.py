@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -35,7 +36,25 @@ class ReleaseTests(unittest.TestCase):
             self.assertAlmostEqual(summary["accuracy_percent"], float(entry["accuracy_percent"]))
             self.assertAlmostEqual(summary["macro_f1_percent"], float(entry["macro_f1_percent"]))
 
+    def test_mixed_emotion_annotation_audit(self):
+        report_path = ROOT / "results" / "reports" / "mixed_emotion_annotation_audit.json"
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        self.assertEqual(report["n"], 300)
+        self.assertEqual(report["initial_agreements"], 277)
+        self.assertEqual(report["annotator_a_vs_target"], 288)
+        self.assertEqual(report["annotator_b_vs_target"], 289)
+        self.assertEqual(report["agreed_labels_matching_target"], 277)
+        self.assertEqual(report["direct_depression_happy_disagreements"], 0)
+        self.assertEqual(
+            report["disagreements_with_at_least_one_low_confidence_rating"], 23
+        )
+        self.assertAlmostEqual(report["raw_agreement"], 277 / 300)
+        self.assertAlmostEqual(report["unweighted_cohen_kappa"], 0.8846886593803269)
+        self.assertEqual(
+            [round(value, 4) for value in report["kappa_bootstrap"]["ci"]],
+            [0.8350, 0.9294],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
-
