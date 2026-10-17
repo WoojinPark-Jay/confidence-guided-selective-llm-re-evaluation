@@ -2,11 +2,11 @@
 
 ## Mixed Emotion
 
-`mixed_emotion/mixed_emotion_stress_test_300.csv` is the final 300-example synthetic stress test used by the released pipeline. It is balanced across Depression, Neutral, and Happy proxy labels and was excluded from Phase 1 training, model validation, calibration, and threshold selection.
+`mixed_emotion/mixed_emotion_stress_test_300.csv` is the final 300-example synthetic stress test used by the released pipeline. It is balanced across Depression, Neutral, and Happy proxy labels and was excluded from Phase 1 training, model validation, calibration, and threshold selection. It informed Phase 2 prompt development and is therefore treated as an exploratory stress-test evaluation.
 
 `mixed_emotion/mixed_emotion_phase1_outputs.csv` contains only the stable example ID, prespecified target, frozen Phase 1 prediction, calibrated confidence, and routing indicator for the same 300 synthetic examples. It contains no text. The release notebooks join this file to the public synthetic text by `example_id` and `target_label` after independently verifying both file hashes. This transparent pair replaces the former opaque compressed notebook payload.
 
-`mixed_emotion/mixed_emotion_annotation_audit.csv` contains anonymized, case-level results from two independent research annotators. It includes the prespecified target, each assigned label and confidence rating, and an agreement flag. Annotator names, account details, randomized presentation order, and internal workspace links are excluded. The audit was descriptive: there was no adjudication and the prespecified targets were not changed.
+`mixed_emotion/mixed_emotion_annotation_audit.csv` contains anonymized, case-level results from two independent research annotators. It includes the prespecified target, each assigned label and confidence rating, and an agreement flag. Annotator names, account details, randomized presentation order, and internal workspace links are excluded. A separate researcher verified completeness, record alignment, and the aggregate statistics. The audit was descriptive: there was no adjudication and the prespecified targets were not changed.
 
 ## Reddit evaluations
 

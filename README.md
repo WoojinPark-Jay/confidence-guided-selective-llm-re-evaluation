@@ -49,9 +49,11 @@ All values below were recomputed from row-aligned final predictions. Accuracy an
 
 The final Llama 3 SELF-DISCOVER pipeline improved over Phase 1 on the 12,000-post Reddit test set and the separately held 9,000-post set. Its observed advantage over Direct and CoT on Reddit was small and not statistically distinguishable in the paired protocol-to-protocol tests. On the controlled Mixed Emotion stress test, SELF-DISCOVER was higher than Direct and CoT for both Llama models. See `results/reports/` for exact McNemar tests, Holm adjustments, and confidence intervals.
 
+The Reddit and Mixed Emotion comparisons informed Phase 2 prompt development and are reported as exploratory evaluations. The additional 9,000-post evaluation used the frozen final classifier, threshold, prompts, and cached plan without revision during that run.
+
 ## Independent annotation audit
 
-Two research annotators who were not involved in generating the Mixed Emotion examples or developing the Phase 2 prompts independently labeled all 300 examples. They received only the post text and shared three-class policy; original targets, scenario metadata, model outputs, and the other annotator's responses were withheld. Initial agreement was 277/300 (92.33%), with unweighted Cohen's kappa of 0.8847. Annotators A and B matched the prespecified targets on 288/300 (96.00%) and 289/300 (96.33%) examples. No adjudication or post-audit relabeling was performed.
+Two research annotators who were not involved in generating the Mixed Emotion examples or developing the Phase 2 prompts independently labeled all 300 examples. They received only the post text and shared three-class policy; original targets, scenario metadata, model outputs, and the other annotator's responses were withheld. Initial agreement was 277/300 (92.33%), with unweighted Cohen's kappa of 0.8847. Annotators A and B matched the prespecified targets on 288/300 (96.00%) and 289/300 (96.33%) examples. A separate researcher verified annotation completeness, record alignment, and the reported statistics. No adjudication or post-audit relabeling was performed.
 
 The anonymized case-level labels and confidence ratings are in `data/mixed_emotion/mixed_emotion_annotation_audit.csv`. Run `python3 scripts/reproduce_annotation_audit.py` to regenerate the aggregate report and bootstrap interval.
 

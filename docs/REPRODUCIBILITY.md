@@ -34,6 +34,8 @@ Do not fit temperature or select the threshold on either held-out evaluation set
 
 Only rows with calibrated confidence below `0.70` are routed. Phase 2 receives minimally sanitized original title and body text. The cleaned Phase 1 model input must not be substituted for this field.
 
+Phase 2 input is capped at 6,000 characters. Longer text preserves the first 3,500 characters, inserts the recorded omission marker, and preserves the final 2,426 characters so that both the opening context and final emotional trajectory remain available.
+
 Direct, CoT, and SELF-DISCOVER operate on the same routed IDs within a dataset. SELF-DISCOVER performs SELECT, ADAPT, and IMPLEMENT once per model to create a model-specific task-level plan. That plan is cached and reused for every routed post in both the Reddit and Mixed Emotion evaluations. Each post still receives a fresh execution response.
 
 If the final label cannot be parsed unambiguously, the Phase 1 prediction is retained. A failed parse is not regenerated and is not automatically counted as an error unless the retained Phase 1 label is itself wrong.
