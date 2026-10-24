@@ -43,6 +43,7 @@ pre,code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace
   .prompt-reader pre { height: 320px; }
 }
 .authors { font-size: 19px; margin: 0 0 2px; color: #333; }
+.affiliation { font-size: 17px; margin: 0 0 4px; color: #444; }
 sup { font-size: 12px; }
 .author-note { font-size: 13px; margin: 0; color: #666; }
 .resources { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 26px; margin-top: 19px; }
