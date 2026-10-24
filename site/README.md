@@ -14,6 +14,8 @@ The page uses public results, synthetic examples, verified synthetic model respo
 
 ## Algorithm and case walkthrough (October 24)
 
+Following a second presentation review, the schematic inference list was replaced with all four manuscript procedures from Section V. Their titles and logical steps are retained, with web-adapted notation and line numbering. Algorithm 2 opens by default. A linked sequence distinguishes policy selection, per-post inference, routed SELF-DISCOVER execution, and full-set auditing. Calibration diagnostics are a secondary disclosure. The case reader now exposes all four outcomes as radio choices, presents the prediction change first, and aligns original input with exact response excerpts in two columns (stacked on mobile). The highlighted ending sentence is editorial, not model attribution. Detailed model responses and provenance remain available.
+
 The header uses the same Korea University logo as the author's [bounded-history-agreement page](https://woojinpark-jay.github.io/bounded-history-agreement/assets/korea-university.png), following confirmation that both named authors are affiliated with the university. This is an affiliation mark, not an endorsement.
 
 The algorithm section separates pre-inference calibration and saved-plan construction from per-post classification, routing, re-evaluation, and label fallback. It does not replace the exact notebook implementation.

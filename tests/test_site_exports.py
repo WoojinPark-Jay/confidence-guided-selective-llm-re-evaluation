@@ -18,6 +18,19 @@ def payload(name, variable):
 
 
 class SiteExportTests(unittest.TestCase):
+    def test_four_manuscript_algorithms_and_case_controls(self):
+        html = (ROOT / 'site/index.html').read_text()
+        for number in range(1, 5):
+            self.assertEqual(html.count('id="algorithm-%d"' % number), 1)
+        for title in ('Calibrated confidence-guided routing',
+                      'Two-phase inference with fixed calibrated routing policy',
+                      'Audited end-to-end evaluation of routed predictions',
+                      'Final task-level SELF-DISCOVER re-evaluation'):
+            self.assertIn(title, html)
+        self.assertEqual(html.count('name="case-choice"'), 4)
+        self.assertIn('Highlighting is editorial, not model attribution.', html)
+        self.assertIn('a fallback is not risk-feasible', html)
+
     def test_release_uses_fingerprinted_assets(self):
         class Assets(HTMLParser):
             def __init__(self):

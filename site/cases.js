@@ -2,15 +2,8 @@
   'use strict';
   if (!window.CASE_DATA) return;
   const records = window.CASE_DATA.cases;
-  const select = document.getElementById('case-select');
+  const choices = [...document.querySelectorAll('input[name="case-choice"]')];
   const put = (id, value) => { document.getElementById(id).textContent = value; };
-  select.replaceChildren(...records.map((item, index) => {
-    const option = document.createElement('option');
-    option.value = String(index);
-    option.textContent = item.outcome;
-    return option;
-  }));
-  select.disabled = false;
 
   // Text-only rendering preserves the model output without interpreting its HTML.
   function sections(response) {
@@ -21,10 +14,17 @@
   }
 
   function render() {
-    const item = records[Number(select.value)];
+    const item = records[Number(choices.find(choice => choice.checked).value)];
     const confidence = (item.confidence * 100).toFixed(2) + '%';
     put('case-id', item.example_id);
     put('case-post', item.text);
+    const ending = item.text.match(/[^.!?]+[.!?]$/);
+    if (ending) {
+      const post = document.getElementById('case-post');
+      const mark = document.createElement('mark');
+      mark.textContent = ending[0];
+      post.replaceChildren(document.createTextNode(item.text.slice(0, ending.index)), mark);
+    }
     put('case-phase1', item.phase1_label);
     put('case-confidence', confidence + ' calibrated confidence');
     put('case-routing', item.routed ? 'Re-evaluate' : 'Keep Phase 1');
@@ -39,6 +39,10 @@
     };
     put('case-outcome', outcomes[item.outcome]);
     document.getElementById('case-reasoning').hidden = !item.response;
+    document.getElementById('case-no-response').hidden = Boolean(item.response);
+    document.querySelector('.case-model-note').hidden = !item.response;
+    document.getElementById('case-full').hidden = !item.response;
+    document.getElementById('case-content').dataset.outcome = item.outcome;
     document.getElementById('case-full').open = false;
     put('case-report', item.response || 'No LLM call was made.');
     const excerpt = document.getElementById('case-excerpt');
@@ -61,6 +65,11 @@
     };
     put('case-interpretation', interpretations[item.outcome]);
   }
-  select.addEventListener('change', render);
+  choices.forEach(choice => choice.addEventListener('change', render));
+  document.querySelectorAll('.procedure-map a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelector(link.getAttribute('href')).open = true;
+    });
+  });
   render();
 })();

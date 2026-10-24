@@ -33,21 +33,21 @@
     </figure>
     <nav class="section-links" aria-label="Page sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#algorithm">Algorithm</a><a href="#case-study">Case walkthrough</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#results">Results</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
     <section class="prose" id="abstract">
-      <h2>Abstract</h2>
+      <div class="section-heading"><span class="section-number">OVERVIEW</span><h2>Abstract</h2></div>
       <p>Large language models can reconsider uncertain classifications, but re-evaluating every input increases generation workload and can introduce new errors. We study confidence-guided selective re-evaluation for three-class emotion classification in social media. A temperature-scaled DistilBERT classifier retains high-confidence predictions and routes the remaining posts to Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.</p>
       <p>On the exploratory 12,000-post Reddit evaluation, Llama 3 SELF-DISCOVER improves accuracy from 96.92% to 97.20% while re-evaluating 1.82% of posts. On a separate, fixed-protocol evaluation of 9,000 posts, it produces 17 net corrections while routing 1.23%, with a significant improvement over Phase 1 under the specified Holm adjustment. SELF-DISCOVER has the highest observed accuracy across the evaluated sets, but its differences from Direct and CoT are not statistically resolved on Reddit. The results describe a proxy-label classification task, not clinical diagnosis.</p>
     </section>
     <section id="method">
       <div class="prose">
-        <h2>Method</h2>
+        <div class="section-heading"><span class="section-number">01 / METHOD</span><h2>Confidence first, re-evaluation when needed</h2></div>
         <h3>Confidence-based routing</h3>
         <p>Phase 1 predicts Depression, Neutral, or Happy. Temperature scaling adjusts the model's confidence, and a threshold determines which predictions are retained. The selected threshold is <i>&tau;</i> = 0.70: 11,807 of 12,000 calibration posts are accepted, with 1.940% empirical error and a 2.162% one-sided Clopper&ndash;Pearson upper bound.</p>
         <p>The lowest candidate in the prespecified 0.70&ndash;1.00 grid already satisfies the 5% risk budget, so the grid boundary determines the operating point. Temperature fitting and threshold selection use the same calibration partition. The pointwise bound is not a simultaneous post-selection guarantee and does not guarantee the same risk under distribution shift.</p>
       </div>
-      <figure>
+      <details class="supporting-figure"><summary>Calibration diagnostics <span>Reliability, NLL, Brier score, and ECE</span></summary><figure>
         <a href="assets/calibration.webp" target="_blank" rel="noopener" aria-label="Open the calibration figure"><img src="assets/calibration.webp" loading="lazy" alt="Reliability before and after temperature scaling, calibration metrics, and the risk-coverage curve."></a>
         <figcaption><strong>Calibration.</strong> Temperature scaling reduces NLL, Brier score, and ECE. The marked operating point retains 98.39% of the calibration set.</figcaption>
-      </figure>
+      </figure></details>
       <div class="prose">
         <h3>Selective LLM re-evaluation</h3>
         <p>Direct uses one generation call. CoT uses five dialogue turns, including acknowledgment and text-response turns. SELF-DISCOVER constructs a task-level plan from the class policy and 18 researcher-authored reasoning modules, then reuses that plan for a fresh evaluation of each routed post. Plan construction does not receive evaluation posts or their reference labels.</p>
@@ -68,51 +68,80 @@
       </div>
       <p class="prose">The protocols differ in label visibility, call structure, and generation budget; the comparison is between complete configurations rather than an isolated test of reasoning components. If the final label cannot be parsed, the Phase 1 prediction is retained.</p>
     </section>
-    <section class="prose algorithm" id="algorithm">
-      <h2>From a post to a final label</h2>
-      <p class="algorithm-preparation"><strong>Before inference.</strong> Fit temperature and select the threshold on calibration data. For SELF-DISCOVER, run SELECT &rarr; ADAPT &rarr; IMPLEMENT on the task policy and reasoning modules, then save one plan per model. No evaluation post or reference label enters plan construction.</p>
-      <ol class="algorithm-flow">
-        <li><strong>Classify the post</strong><p>DistilBERT produces class scores. Apply the fitted temperature to obtain calibrated probabilities.</p><div class="formula">q = softmax(z / T), &nbsp; T = 1.480195<br>y<sub>1</sub> = arg max q, &nbsp; c = max q</div></li>
-        <li><strong>Route by confidence</strong><div class="routing-branches"><div><span class="branch-condition">c &ge; 0.70</span><p>Keep y<sub>1</sub>.<br>No LLM call.</p></div><div><span class="branch-condition">c &lt; 0.70</span><p>Send the original post to Phase 2.<br>For SELF-DISCOVER, withhold y<sub>1</sub>.</p></div></div></li>
-        <li><strong>Re-evaluate the routed post</strong><p>Llama 3 receives the shared policy, saved plan, original post, and researcher-authored evidence and alternative-interpretation checks. It generates a fresh response for this post.</p></li>
-        <li><strong>Return one label</strong><p>Use the parsed terminal label. If no permitted label can be parsed, retain y<sub>1</sub>. The reference target is used only to evaluate the outcome.</p></li>
-      </ol>
-      <details><summary>Compact inference pseudocode</summary><pre class="algorithm-code"><code>plan = load_saved_plan(model)          # reused across posts
-for post in posts:
-    q = softmax(phase1(preprocess(post)) / T)
-    y1, confidence = argmax(q), max(q)
-    if confidence &gt;= 0.70:
-        yield y1
-        continue
-    response = llm(policy, plan, original(post), checks)
-    label = parse_terminal_label(response)
-    yield label if label is valid else y1</code></pre><p class="stage-note">Schematic SELF-DISCOVER inference; exact preprocessing, input limits, prompts, and parsing rules are in the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/notebooks/colab/08_self_discover_v6c_final.ipynb">released notebook</a>.</p></details>
+    <section class="paper-algorithms" id="algorithm">
+      <div class="section-heading"><span class="section-number">02 / ALGORITHMS</span><h2>The four procedures in the paper</h2></div>
+      <p class="section-intro">Policy selection, inference, evaluation, and SELF-DISCOVER execution are separate procedures. The steps below follow manuscript Algorithms 1&ndash;4, with notation rendered for the web.</p>
+      <nav class="procedure-map" aria-label="Algorithm sequence">
+        <a href="#algorithm-1"><small>Before testing</small><strong>1. Calibrate &amp; select</strong><span>Fix T* and &tau;*</span></a>
+        <a href="#algorithm-2"><small>For each post</small><strong>2. Classify &amp; route</strong><span>Keep or re-evaluate</span></a>
+        <a href="#algorithm-4"><small>For routed posts</small><strong>4. Execute saved plan</strong><span>Generate and parse</span></a>
+        <a href="#algorithm-3"><small>After prediction</small><strong>3. Audit outcomes</strong><span>Corrections minus new errors</span></a>
+      </nav>
+      <p class="algorithm-note">The runtime order is 1 &rarr; 2 &rarr; 4 &rarr; 3 for SELF-DISCOVER; numbering follows the paper. Algorithms 1 and 3 are not part of per-post LLM reasoning.</p>
+      <details class="paper-algorithm" id="algorithm-1">
+        <summary><span class="algorithm-number">Algorithm 1</span><span>Calibrated confidence-guided routing</span><small>Calibration only</small></summary>
+        <div class="algorithm-body"><p><b>Input</b> D<sub>val</sub>, D<sub>cal</sub>, classifier f<sub>&theta;</sub>; risk budget &alpha;, confidence level 1 &minus; &delta;, grid T, minimum count m<sub>min</sub>.</p><p><b>Output</b> Temperature T* and threshold &tau;*.</p>
+          <ol class="algorithm-lines"><li>Select the best checkpoint using D<sub>val</sub>.</li><li>Fit T* on D<sub>cal</sub> by minimizing negative log-likelihood.</li><li>Compute calibrated confidences c<sub>i</sub> on D<sub>cal</sub>.</li><li>For each threshold &tau; in the prespecified grid:</li><li class="indented">Form accepted set A(&tau;) and routed set R(&tau;).</li><li class="indented">Compute coverage, routing rate, and the upper risk bound.</li><li>Retain candidates with upper risk bound &le; &alpha; and |A(&tau;)| &ge; m<sub>min</sub>.</li><li>If no candidate remains, flag infeasibility; a fallback is not risk-feasible.</li><li>Choose a retained threshold with maximum coverage.</li><li>Fix T* and &tau;* before held-out testing.</li></ol>
+        </div>
+      </details>
+      <details class="paper-algorithm" id="algorithm-2" open>
+        <summary><span class="algorithm-number">Algorithm 2</span><span>Two-phase inference with fixed calibrated routing policy</span><small>One post</small></summary>
+        <div class="algorithm-body"><p><b>Input</b> Post x; classifier f<sub>&theta;</sub>; fixed T* and &tau;*; Phase 2 model and prompting protocol g.</p><p><b>Output</b> Final label and parsing status.</p>
+          <ol class="algorithm-lines"><li>Obtain the Phase 1 input x<sup>(1)</sup> from post record x.</li><li>Compute logits z = f<sub>&theta;</sub>(x<sup>(1)</sup>) and calibrated probabilities q<sub>k</sub>(T*).</li><li>Set Phase 1 label y<sub>1</sub> = arg max<sub>k</sub> q<sub>k</sub>(T*) and confidence c = max<sub>k</sub> q<sub>k</sub>(T*).</li><li>If c &ge; &tau;*: return y<sub>1</sub>. No Phase 2 call.</li><li>Otherwise, retrieve the minimally sanitized original text x<sup>(2)</sup>.</li><li>Generate a response with g using its prescribed inputs.</li><li>Parse exactly one label from {Depression, Neutral, Happy}.</li><li>If parsing fails, retain y<sub>1</sub> and record the failure.</li><li>Return the parsed label or recorded fallback.</li></ol>
+        </div>
+      </details>
+      <details class="paper-algorithm" id="algorithm-3">
+        <summary><span class="algorithm-number">Algorithm 3</span><span>Audited end-to-end evaluation of routed predictions</span><small>All evaluation posts</small></summary>
+        <div class="algorithm-body"><p><b>Input</b> Reference labels y<sub>i</sub>, Phase 1 predictions, route indicators r<sub>i</sub>, and parsed Phase 2 labels.</p><p><b>Output</b> Corrected errors C, introduced errors I, net corrections C &minus; I, and full-set metrics.</p>
+          <ol class="algorithm-lines"><li>For each example, use Phase 2 only if it was routed and parsing succeeded; otherwise use Phase 1.</li><li>Count C: routed examples where Phase 1 was wrong and the final prediction is correct.</li><li>Count I: routed examples where Phase 1 was correct and the final prediction is wrong.</li><li>Report C, I, and C &minus; I.</li><li>Recompute end-to-end metrics over all examples, including accepted posts.</li></ol>
+        </div>
+      </details>
+      <details class="paper-algorithm" id="algorithm-4">
+        <summary><span class="algorithm-number">Algorithm 4</span><span>Final task-level SELF-DISCOVER re-evaluation</span><small>Saved plan + routed posts</small></summary>
+        <div class="algorithm-body"><p><b>Input</b> Model g; researcher-authored task, policy, modules, execution guidance; routed posts.</p><p><b>Output</b> Stored response, parsing status, and final prediction for each routed post.</p>
+          <ol class="algorithm-lines"><li>If a retained plan for g exists: load it and skip discovery.</li><li>Otherwise, give g task materials only; no post text or labels.</li><li>Have g SELECT relevant modules and ADAPT them to the task.</li><li>Have g IMPLEMENT the procedure; store it as the plan.</li><li>For each routed post, execute the plan on its original text without the Phase 1 label.</li><li>Request source quotes, three-label evidence, and a counterfactual check.</li><li>Parse the final label; retain Phase 1 if parsing fails.</li><li>Store the response, parsed status, and final prediction.</li></ol>
+        </div>
+      </details>
+      <p class="algorithm-note">Selected operating point: T* = 1.480195; &tau;* = 0.70. The calibration risk constraint was non-binding within the prespecified grid. Source: manuscript Section V and the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/notebooks/colab">released notebooks</a>.</p>
     </section>
-    <section class="prose case-study" id="case-study">
-      <h2>A post through the pipeline</h2>
-      <p>Recorded Llama 3 SELF-DISCOVER outcomes on the synthetic Mixed Emotion set. These are saved experiment records, not live inference or patient histories.</p>
-      <div class="case-toolbar"><label for="case-select">Case</label><select id="case-select" disabled><option>Correction</option></select><span id="case-id">MEV2_DEP_046</span></div>
+    <section class="case-study" id="case-study">
+      <div class="section-heading"><span class="section-number">03 / RECORDED CASES</span><h2>From input to recorded outcome</h2></div>
+      <p class="section-intro">Llama 3 SELF-DISCOVER on the synthetic Mixed Emotion set. Original inputs and unedited model responses from the final v6c run; no live inference.</p>
+      <fieldset class="case-options"><legend>Recorded outcome</legend>
+        <label><input type="radio" name="case-choice" value="0" checked><span>Correction</span></label>
+        <label><input type="radio" name="case-choice" value="1"><span>Introduced error</span></label>
+        <label><input type="radio" name="case-choice" value="2"><span>Parsing fallback</span></label>
+        <label><input type="radio" name="case-choice" value="3"><span>Not routed</span></label>
+      </fieldset>
+      <div class="case-record-line"><span id="case-id">MEV2_DEP_046</span><span>Synthetic post &middot; saved experiment record</span></div>
       <article id="case-content">
-        <h3>01 &nbsp; Input post</h3>
-        <blockquote id="case-post">During recovering after a difficult week, I noticed a small success that I had been waiting for, and I kept track of dates, forms, and reminders. Even with those ordinary or positive moments, there was the thought that I was falling behind everyone else. I kept thinking about whether the moment was a turning point or just a pause, especially while making tea. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.</blockquote>
+
         <div class="case-decisions">
-          <div><h3>02 &nbsp; Phase 1</h3><strong id="case-phase1">Happy</strong><p id="case-confidence">68.82% calibrated confidence</p></div>
-          <div><h3>03 &nbsp; Routing</h3><strong id="case-routing">Re-evaluate</strong><p id="case-route-note">68.82% &lt; 70% threshold</p></div>
-          <div><h3>04 &nbsp; Final label</h3><strong id="case-final">Depression</strong><p id="case-outcome">Corrected against the reference target</p></div>
+          <div><h3>Phase 1</h3><strong id="case-phase1">Happy</strong><p id="case-confidence">68.82% calibrated confidence</p></div>
+          <div><h3>Routing decision</h3><strong id="case-routing">Re-evaluate</strong><p id="case-route-note">68.82% &lt; 70% threshold</p></div>
+          <div><h3>Final prediction</h3><strong id="case-final">Depression</strong><p id="case-outcome">Corrected against the reference target</p></div>
         </div>
         <p class="case-target">Reference target: <strong id="case-target">Depression</strong><span>Evaluation only; not supplied to the model.</span></p>
+        <div class="case-evidence-grid"><div class="case-input">
+          <h3>Input post</h3><blockquote id="case-post">During recovering after a difficult week, I noticed a small success that I had been waiting for, and I kept track of dates, forms, and reminders. Even with those ordinary or positive moments, there was the thought that I was falling behind everyone else. I kept thinking about whether the moment was a turning point or just a pause, especially while making tea. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.</blockquote>
+          <p class="case-input-note">Full synthetic text, unchanged. Highlighting is editorial, not model attribution.</p>
+        </div><div class="case-evidence">
         <div id="case-reasoning">
-          <h3>Inside the saved response</h3>
-          <p class="stage-note">Model-generated text, unedited. A correct final label does not make every intermediate claim correct.</p>
+          <h3>Evidence in the model response</h3>
+          <p class="stage-note">Exact excerpts, not a reconstruction of internal reasoning.</p>
           <div id="case-excerpt"><p>The model identifies unresolved sadness despite the brief positive event. The full recorded response is available in the source records below.</p></div>
-          <details id="case-full"><summary>Full recorded model response</summary><div id="case-report" class="case-report"></div></details>
+
         </div>
+        <p id="case-no-response" hidden>No LLM response exists for this case. The router retained the Phase 1 label.</p>
+        <p class="case-model-note">The plan is shared across posts; this response is generated for this input. Intermediate claims may be imperfect even when the final label is correct.</p>
+        </div></div>
+        <details id="case-full"><summary>Full recorded model response <span>Unedited output</span></summary><div id="case-report" class="case-report"></div></details>
         <p id="case-interpretation" class="case-interpretation">The label changes from Happy to Depression. This is one of 28 corrections in the 300-example set; one new error gives 27 net corrections.</p>
       </article>
       <p class="stage-note">Examples were selected to show a correction, an introduced error, a parsing fallback, and an accepted error. They are not a representative sample. <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/data/mixed_emotion/site_case_records.json">Records and selection provenance</a>.</p>
     </section>
     <section class="prompt-reader" id="prompt-reader">
-      <h2>Prompts and saved plans</h2>
+      <div class="section-heading"><span class="section-number">04 / SOURCE MATERIALS</span><h2>Prompts and saved plans</h2></div>
       <p><strong>Prompts are instructions; saved plans are model outputs.</strong> Direct asks for one label. CoT divides re-evaluation into five calls. SELF-DISCOVER first builds a reusable task-level plan, then applies it to each routed post.</p>
       <div class="tabs" role="tablist" aria-label="Prompt protocol">
         <button id="prompt-direct" role="tab" aria-selected="true" aria-controls="prompt-panel" data-prompt="Direct">Direct</button>
@@ -143,7 +172,7 @@ or Final label: Happy</code></pre>
     </section>
     <section id="results">
       <div class="prose">
-        <h2>Results</h2>
+        <div class="section-heading"><span class="section-number">05 / EVALUATION</span><h2>Results across the evaluated sets</h2></div>
         <p>The main Reddit and synthetic Mixed Emotion sets were used during prompt development and are exploratory evaluations. The additional 9,000-post run keeps model weights, temperature, threshold, prompts, and the saved plan fixed.</p>
       </div>
       <div class="result-explorer">
@@ -197,7 +226,7 @@ or Final label: Happy</code></pre>
       </figure>
     </section>
     <section class="prose" id="data">
-      <h2>Data and annotation</h2>
+      <div class="section-heading"><span class="section-number">06 / DATA</span><h2>Data and annotation</h2></div>
       <p>The Reddit labels are community-derived proxies for Depression, Neutral, and Happy. The 300-example synthetic Mixed Emotion set tests mixed or shifting affect under a shared classification policy. It was generated using GPT-5 via Codex and researcher-authored scenario and label constraints, and also informed prompt development.</p>
       <p>Two researchers uninvolved in data generation or Phase 2 prompt development independently annotated all 300 examples without seeing targets, scenario metadata, model outputs, or each other's responses. They agreed on 277 examples (92.33%; unweighted Cohen's &kappa; = 0.8847). Agreement with the original targets was 96.00% and 96.33%. A third researcher checked completeness, record alignment, and statistics. No adjudication or post-audit relabeling was performed.</p>
       <p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/data/mixed_emotion">Synthetic data and anonymized annotations</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/mixed_emotion_annotation_audit.json">Annotation statistics</a></p>
@@ -205,7 +234,7 @@ or Final label: Happy</code></pre>
       <p>Subreddit-derived labels can carry topic and lexical biases. The annotation audit supports consistency with the shared policy, not clinical validity or generalization to real-world populations. The results do not establish a universal advantage of SELF-DISCOVER, the isolated contribution of its planning and evidence checks, or generalization to newer models and other platforms.</p>
     </section>
     <section class="prose" id="reproduce">
-      <h2>Reproducibility</h2>
+      <div class="section-heading"><span class="section-number">07 / REPRODUCIBILITY</span><h2>Sources and verification</h2></div>
       <p>The public repository includes frozen configurations, exact prompts, saved plans, synthetic data, text-free predictions, aggregate reports, and verification scripts. Raw Reddit text, user identifiers, model weights, and the manuscript PDF are not redistributed here.</p>
       <pre><code>git clone https://github.com/WoojinPark-Jay/\
 confidence-guided-selective-llm-re-evaluation.git
