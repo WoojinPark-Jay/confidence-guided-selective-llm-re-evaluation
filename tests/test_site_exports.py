@@ -14,11 +14,25 @@ ROOT = Path(__file__).resolve().parents[1]
 def payload(name, variable):
     text = (ROOT / 'site' / name).read_text()
     prefix = 'window.' + variable + ' = '
-    assert text.startswith(prefix) and text.endswith(';\n')
-    return json.loads(text[len(prefix):-2])
+    assert prefix in text
+    return json.JSONDecoder().raw_decode(text.split(prefix, 1)[1])[0]
 
 
 class SiteExportTests(unittest.TestCase):
+    def test_matched_baseline_matrices(self):
+        matrices = payload('results-data.js', 'studyMatrices')
+        expected = {'Reddit': (370, 336), 'Mixed Emotion': (49, 22),
+                    'Additional Reddit 9000': (218, 201)}
+        for dataset, data in matrices.items():
+            with (ROOT / data['source']).open() as source:
+                records = list(csv.DictReader(source))
+            self.assertEqual(data['n'], len(records))
+            for stage, key in enumerate(('phase1_label', 'final_label')):
+                actual = [[sum(r['target_label'] == truth and r[key] == pred for r in records)
+                           for pred in data['labels']] for truth in data['labels']]
+                self.assertEqual(data[key], actual)
+                self.assertEqual(data['n'] - sum(actual[i][i] for i in range(3)), expected[dataset][stage])
+
     def test_original_algorithm_figures_and_research_summary(self):
         html = (ROOT / 'site/index.html').read_text()
         for number in range(1, 5):

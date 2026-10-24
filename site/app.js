@@ -51,6 +51,53 @@ if (window.studyPrompts) {
 }
 
 const datasetSelect = document.getElementById('result-dataset');
+const matrixSelect = document.getElementById('matrix-dataset');
+function showMatrices() {
+  const data = window.studyMatrices[matrixSelect.value];
+  const host = document.getElementById('matrix-pair');
+  host.replaceChildren();
+  const errors = [];
+  ['phase1_label', 'final_label'].forEach((key, stage) => {
+    const matrix = data[key];
+    const correct = matrix.reduce((sum, row, i) => sum + row[i], 0);
+    errors.push(data.n - correct);
+    const figure = document.createElement('figure');
+    const title = document.createElement('figcaption');
+    title.textContent = `${stage ? 'Final: Llama 3 SELF-DISCOVER' : 'Phase 1: DistilBERT'} | ${(correct/data.n*100).toFixed(2)}%`;
+    const table = document.createElement('table');
+    table.className = 'confusion-table';
+    const head = document.createElement('thead');
+    const heading = document.createElement('tr');
+    ['Reference / predicted', ...data.labels].forEach(label => {
+      const th = document.createElement('th'); th.scope = 'col'; th.textContent = label; heading.append(th);
+    });
+    head.append(heading); table.append(head);
+    const tbody = document.createElement('tbody');
+    matrix.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      const label = document.createElement('th'); label.scope = 'row'; label.textContent = data.labels[i]; tr.append(label);
+      const total = row.reduce((a,b) => a+b, 0);
+      row.forEach(value => {
+        const td = document.createElement('td');
+        const share = value / total;
+        td.style.backgroundColor = `rgba(48, 104, 143, ${share})`;
+        td.style.color = share > 0.55 ? '#fff' : '#252525';
+        const count = document.createElement('strong'); count.textContent = value.toLocaleString('en-US');
+        const percent = document.createElement('small'); percent.textContent = (share*100).toFixed(1) + '%';
+        td.append(count, percent); tr.append(td);
+      });
+      tbody.append(tr);
+    });
+    table.append(tbody); figure.append(title, table); host.append(figure);
+  });
+  const scope = matrixSelect.value === 'Additional Reddit 9000' ? 'Fixed-protocol evaluation.' : 'Exploratory evaluation used during prompt development.';
+  document.getElementById('matrix-gain').textContent = `${errors[0]} errors → ${errors[1]} errors: ${errors[0]-errors[1]} net corrections, +${((errors[0]-errors[1])/data.n*100).toFixed(2)} percentage points. ${scope}`;
+  document.getElementById('matrix-source').href = 'https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/' + data.source;
+}
+if (matrixSelect && window.studyMatrices) {
+  matrixSelect.addEventListener('change', showMatrices);
+  showMatrices();
+}
 const modelSelect = document.getElementById('result-model');
 function showOutcomes() {
   const dataset = datasetSelect.value;

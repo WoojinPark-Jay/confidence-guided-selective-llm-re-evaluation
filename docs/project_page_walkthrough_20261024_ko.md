@@ -104,3 +104,17 @@
 - 수식의 축소된 글자와 간격은 유지했다. 긴 생성 방식·최적화 설명은 펼침 영역으로 제공한다.
 - 참고: Guo et al. (2017), https://proceedings.mlr.press/v70/guo17a.html ; Nixon et al. (2019), https://openaccess.thecvf.com/content_CVPRW_2019/html/Uncertainty_and_Robustness_in_Deep_Visual_Learning/Nixon_Measuring_Calibration_in_Deep_Learning_CVPRW_2019_paper.html .
 - 검증: 계산 테스트 7개(수식, 표본 재현성, 동일 개수 분할, 동률 처리, 극단 점수 NLL 등), 웹 배포 자산 검사, 12/60/600개와 두 bin 방식의 브라우저 전환을 확인했다. 논문이나 보고된 결과는 변경하지 않았다.
+
+## 2026-10-25: Phase 1 모델 선택과 최종 개선 연결
+
+- 이전: Method가 calibration부터 시작해 세 분류기의 비교와 DistilBERT 선택 근거가 드러나지 않았다. 최종 혼동행렬만으로는 Phase 1 대비 변화를 직접 읽기 어려웠다.
+- 변경: Method 앞부분에 DistilBERT / Mistral 7B / Llama 2 7B의 정확도, macro F1, 처리량 표를 추가했다. 원고 Table 2와 대조했으며 정확도는 각각 96.88 / 95.36 / 95.17%, 처리량은 4,959.5 / 51.7 / 55.5 posts/s다.
+- 비교 조건: DistilBERT는 full fine-tuning, 나머지는 frozen-backbone linear head다. 동일 12,000건 시험셋과 seed 42/43/44, 모델별 4-trial 검색을 사용한 구성 비교이며, 완전 미세조정한 7B 모델의 성능 비교로 표현하지 않았다. 처리량의 반복 측정은 학습 시드와 별개다.
+- 기준선 구분: 모델 선택용 3-seed 평균 96.88%와 downstream seed-42 실행의 Reddit 정확도 96.92%는 별개로 명시했다. 모델 선택 평균에서 최종 성능을 빼서 개선량을 만들지 않았다.
+- Results에 데이터셋 선택형 전후 혼동행렬을 추가했다. 같은 게시물의 Phase 1 DistilBERT 예측과 최종 Llama 3 SELF-DISCOVER 예측을 나란히 표시한다. 모바일에서는 위아래로 배치한다.
+- 행렬은 공개 `results/predictions/*__llama3__self_discover.csv`의 target_label / phase1_label / final_label에서 직접 집계한다. 두 행렬의 색상은 동일한 행별 0~100% 기준이고, 건수와 행별 백분율을 병기했다. 원문과 ID는 새 웹 데이터에 포함하지 않는다.
+- 오류 수 검증: Reddit 370→336 (+34건, +0.28%p), Mixed Emotion 49→22 (+27건, +9.00%p), 추가 Reddit 218→201 (+17건, +0.19%p). 증감은 반올림 전 건수로 계산한다.
+- 혼동행렬은 선택된 DistilBERT의 전후 비교다. Mistral/Llama 2의 Phase 1 행렬을 생성하거나 이 행렬로 대신 표시하지 않았다.
+- 탐색적 평가와 fixed-protocol 평가를 선택 상태마다 명시했다. 기존 프로토콜 비교와 Holm 해석은 유지했다.
+- 검증: Python 테스트 14개 통과. 세 데이터셋의 모든 셀을 공개 CSV와 재대조했다. 브라우저에서 데이터셋 전환 및 데스크톱/모바일 가로 넘침을 확인했고 실행 오류는 없었다. 스크린샷 도구에 위치 어긋남이 있어 전체 시각 검수가 완벽했다고 단정하지 않는다.
+- 논문 원고 및 실험 결과는 변경하지 않았다.

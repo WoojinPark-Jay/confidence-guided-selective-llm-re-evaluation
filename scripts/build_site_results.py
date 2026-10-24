@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Export verified metrics for the dependency-free project page."""
 import json
+import csv
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,6 +12,21 @@ payload = [{key: row[key] for key in fields} for row in rows]
 (ROOT / 'site/results-data.js').write_text(
     'window.studyResults = ' + json.dumps(payload, indent=2) + ';\n', encoding='utf-8')
 print(f'Exported {len(payload)} verified result rows')
+
+# Matched baseline and final predictions, never pooled across training seeds.
+labels = ['Depression', 'Neutral', 'Happy']
+matrices = {}
+for dataset, slug in [('Reddit', 'reddit'), ('Mixed Emotion', 'mixed_emotion'),
+                      ('Additional Reddit 9000', 'additional_reddit_9000')]:
+    path = f'results/predictions/{slug}__llama3__self_discover.csv'
+    records = list(csv.DictReader((ROOT / path).open()))
+    pair = {key: [[0]*3 for _ in labels] for key in ['phase1_label', 'final_label']}
+    for record in records:
+        for key in pair:
+            pair[key][labels.index(record['target_label'])][labels.index(record[key])] += 1
+    matrices[dataset] = dict(labels=labels, source=path, n=len(records), **pair)
+with (ROOT / 'site/results-data.js').open('a') as output:
+    output.write('window.studyMatrices = ' + json.dumps(matrices, indent=2) + ';\n')
 
 # Keep displayed templates byte-for-byte equal to the released source files.
 groups = {

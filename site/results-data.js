@@ -180,3 +180,134 @@ window.studyResults = [
     "net_corrections": 34
   }
 ];
+window.studyMatrices = {
+  "Reddit": {
+    "labels": [
+      "Depression",
+      "Neutral",
+      "Happy"
+    ],
+    "source": "results/predictions/reddit__llama3__self_discover.csv",
+    "n": 12000,
+    "phase1_label": [
+      [
+        3837,
+        19,
+        144
+      ],
+      [
+        15,
+        3952,
+        33
+      ],
+      [
+        127,
+        32,
+        3841
+      ]
+    ],
+    "final_label": [
+      [
+        3851,
+        24,
+        125
+      ],
+      [
+        13,
+        3954,
+        33
+      ],
+      [
+        104,
+        37,
+        3859
+      ]
+    ]
+  },
+  "Mixed Emotion": {
+    "labels": [
+      "Depression",
+      "Neutral",
+      "Happy"
+    ],
+    "source": "results/predictions/mixed_emotion__llama3__self_discover.csv",
+    "n": 300,
+    "phase1_label": [
+      [
+        79,
+        0,
+        21
+      ],
+      [
+        0,
+        89,
+        11
+      ],
+      [
+        17,
+        0,
+        83
+      ]
+    ],
+    "final_label": [
+      [
+        82,
+        0,
+        18
+      ],
+      [
+        0,
+        97,
+        3
+      ],
+      [
+        0,
+        1,
+        99
+      ]
+    ]
+  },
+  "Additional Reddit 9000": {
+    "labels": [
+      "Depression",
+      "Neutral",
+      "Happy"
+    ],
+    "source": "results/predictions/additional_reddit_9000__llama3__self_discover.csv",
+    "n": 9000,
+    "phase1_label": [
+      [
+        2884,
+        7,
+        109
+      ],
+      [
+        10,
+        2956,
+        34
+      ],
+      [
+        44,
+        14,
+        2942
+      ]
+    ],
+    "final_label": [
+      [
+        2890,
+        13,
+        97
+      ],
+      [
+        12,
+        2959,
+        29
+      ],
+      [
+        36,
+        14,
+        2950
+      ]
+    ]
+  }
+};

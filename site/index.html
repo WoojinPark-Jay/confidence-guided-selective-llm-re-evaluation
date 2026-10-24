@@ -58,6 +58,23 @@
     <section id="method">
       <div class="prose">
         <div class="section-heading"><span class="section-number">01 / METHOD</span><h2>Confidence first, re-evaluation when needed</h2></div>
+        <h3 id="phase1-comparison">Phase 1: compare three classifiers, select DistilBERT</h3>
+        <p>Before LLM re-evaluation, we compare three classifier configurations on the same 12,000-post Reddit test set, using seeds 42, 43, and 44 and a four-trial search budget per model. DistilBERT has the highest observed mean accuracy and the fastest measured inference under this protocol.</p>
+      </div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Phase 1 model selection">
+        <table>
+          <caption>Phase 1 classifier comparison &middot; three-seed means</caption>
+          <thead><tr><th scope="col">Classifier</th><th scope="col">Adaptation</th><th scope="col">Accuracy &plusmn; SD</th><th scope="col">Macro F1 &plusmn; SD</th><th scope="col">Posts/s</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">DistilBERT (selected)</th><td>Full fine-tuning</td><td><strong>96.88 &plusmn; 0.04%</strong></td><td><strong>96.88 &plusmn; 0.04%</strong></td><td><strong>4,959.5</strong></td></tr>
+            <tr><th scope="row">Mistral 7B</th><td>Frozen backbone + linear head</td><td>95.36 &plusmn; 0.08%</td><td>95.36 &plusmn; 0.08%</td><td>51.7</td></tr>
+            <tr><th scope="row">Llama 2 7B</th><td>Frozen backbone + linear head</td><td>95.17 &plusmn; 0.07%</td><td>95.17 &plusmn; 0.07%</td><td>55.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="source-links">Source: manuscript Table 2. Throughput: NVIDIA A100-SXM4-40GB, fp16, batch 32, 256-token cap; mean of three timing repetitions, separate from training seeds. This compares the tested configurations, not fully fine-tuned 7B models. Bold denotes the highest observed value, not statistical significance.</p>
+      <div class="prose">
+        <p><strong>From model selection to the final pipeline.</strong> The downstream experiments retain the selected seed-42 DistilBERT run. Its Reddit accuracy is 96.92%, distinct from the 96.88% three-seed mean above. <a href="#baseline-to-final">Compare its predictions before and after re-evaluation &rarr;</a></p>
         <h3>Confidence-based routing</h3>
         <p class="tutorial-link"><a class="tutorial-cta" href="tutorial.html">Calibration tutorial</a><span>Temperature scaling &middot; NLL &middot; Brier &middot; ECE</span></p>
         <p>Phase 1 predicts Depression, Neutral, or Happy. Temperature scaling adjusts the model's confidence, and a threshold determines which predictions are retained. The selected threshold is <i>&tau;</i> = 0.70: 11,807 of 12,000 calibration posts are accepted, with 1.940% empirical error and a 2.162% one-sided Clopper&ndash;Pearson upper bound.</p>
@@ -219,6 +236,16 @@ or Final label: Happy</code></pre>
       <div class="prose">
         <div class="section-heading"><span class="section-number">05 / EVALUATION</span><h2>Results across the evaluated sets</h2></div>
         <p>The main Reddit and synthetic Mixed Emotion sets were used during prompt development and are exploratory evaluations. The additional 9,000-post run keeps model weights, temperature, threshold, prompts, and the saved plan fixed.</p>
+      </div>
+      <div id="baseline-to-final" class="baseline-comparison">
+        <h3>Phase 1 &rarr; final predictions on the same posts</h3>
+        <p>The baseline is the retained DistilBERT classifier; the final pipeline adds selective Llama 3 SELF-DISCOVER re-evaluation. These are single-run, end-to-end predictions, not the three-seed model-selection averages.</p>
+        <label for="matrix-dataset">Evaluation set</label>
+        <select id="matrix-dataset"><option value="Additional Reddit 9000">Additional Reddit (9,000)</option><option value="Reddit">Reddit (12,000)</option><option value="Mixed Emotion">Mixed Emotion (300)</option></select>
+        <p id="matrix-gain" aria-live="polite"></p>
+        <div id="matrix-pair" class="matrix-pair"></div>
+        <p class="source-links">Rows: reference labels. Columns: predictions. Cells show counts and within-class percentages; both matrices share the same 0&ndash;100% color scale. <a id="matrix-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/results/predictions">Text-free source predictions</a>.</p>
+        <noscript>Enable JavaScript to compare matrices. The static results table below reports all three baseline and final accuracies.</noscript>
       </div>
       <div class="result-explorer">
         <h3>What changes after re-evaluation?</h3>
