@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "prompts/**"
+      - "plans/**"
       - "results/recomputed_metrics.json"
       - "scripts/build_site_results.py"
       - ".github/workflows/pages.yml"
@@ -35,7 +37,7 @@ jobs:
       - name: Verify published result data
         run: |
           python3 scripts/build_site_results.py
-          git diff --exit-code -- site/results-data.js
+          git diff --exit-code -- site/results-data.js site/prompt-data.js
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:

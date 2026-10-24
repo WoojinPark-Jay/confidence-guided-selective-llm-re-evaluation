@@ -1,4 +1,85 @@
 const body = document.getElementById('all-results-body');
+const promptTabs = [...document.querySelectorAll('[data-prompt]')];
+const fileSelect = document.getElementById('prompt-file');
+let currentGroup = 'Direct';
+const descriptions = {
+  Direct: 'One user message includes the shared policy, original text, and Phase 1 prediction. No rationale is requested.',
+  CoT: 'A system message precedes five generation calls: acknowledgment, text response, independent analysis, comparison, and final decision. Assistant responses remain in the conversation.',
+  'SELF-DISCOVER': 'Task-level SELECT, ADAPT, and IMPLEMENT precede per-post execution. The evidence ledger and counterfactual check are researcher-authored execution instructions.',
+  'Saved plans': 'Unedited model-generated task-level plans used in the experiments, not per-post answers. The Llama 2 output is preserved even where it differs from the requested compact format.'
+};
+function showPrompt() {
+  const file = window.studyPrompts[currentGroup][Number(fileSelect.value)];
+  document.getElementById('prompt-text').textContent = file.text;
+  document.getElementById('prompt-source').href = 'https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/' + file.path;
+  document.querySelector('.prompt-reader pre').scrollTop = 0;
+}
+function choosePrompt(tab) {
+  currentGroup = tab.dataset.prompt;
+  promptTabs.forEach(item => {
+    item.setAttribute('aria-selected', String(item === tab));
+    item.tabIndex = item === tab ? 0 : -1;
+  });
+  document.getElementById('prompt-panel').setAttribute('aria-labelledby', tab.id);
+  fileSelect.replaceChildren(...window.studyPrompts[currentGroup].map((file, index) => {
+    const option = document.createElement('option'); option.value = index; option.textContent = file.title; return option;
+  }));
+  document.getElementById('prompt-description').textContent = descriptions[currentGroup];
+  showPrompt();
+}
+if (window.studyPrompts) {
+  promptTabs.forEach((tab,index) => {
+    tab.addEventListener('click', () => choosePrompt(tab));
+    tab.addEventListener('keydown', event => {
+      if (!['ArrowRight','ArrowLeft','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? promptTabs.length-1 :
+        (index + (event.key === 'ArrowRight' ? 1 : -1) + promptTabs.length) % promptTabs.length;
+      promptTabs[next].focus(); choosePrompt(promptTabs[next]);
+    });
+  });
+  fileSelect.addEventListener('change', showPrompt);
+  choosePrompt(promptTabs[0]);
+}
+
+const datasetSelect = document.getElementById('result-dataset');
+const modelSelect = document.getElementById('result-model');
+function showOutcomes() {
+  const dataset = datasetSelect.value;
+  [...modelSelect.options].find(option => option.value === 'Llama 2').disabled = dataset === 'Additional Reddit 9000';
+  if (dataset === 'Additional Reddit 9000') modelSelect.value = 'Llama 3';
+  const methods = ['Direct','CoT','SELF-DISCOVER'];
+  const rows = window.studyResults.filter(row => row.dataset === dataset && row.model === modelSelect.value)
+    .sort((a,b) => methods.indexOf(a.method)-methods.indexOf(b.method));
+  const scale = Math.max(...rows.flatMap(row => [row.corrected,row.introduced]),1);
+  const routed = dataset === 'Reddit' ? 218 : dataset === 'Mixed Emotion' ? 86 : 111;
+  document.getElementById('result-context').textContent =
+    (dataset === 'Additional Reddit 9000' ? 'Fixed-protocol evaluation. ' : 'Exploratory prompt-development evaluation. ') +
+    `${routed} of ${rows[0].n.toLocaleString('en-US')} posts routed; Phase 1 accuracy ${rows[0].phase1_accuracy_percent.toFixed(2)}%.`;
+  const chart = document.getElementById('outcome-chart'); chart.replaceChildren();
+  rows.forEach(row => {
+    const item = document.createElement('div'); item.className = 'outcome-row';
+    const label = document.createElement('strong'); label.className = 'outcome-name'; label.textContent = row.method;
+    const bars = document.createElement('div'); bars.className = 'bar-pair'; bars.setAttribute('aria-hidden','true');
+    ['corrected','introduced'].forEach(key => {
+      const track = document.createElement('div'); track.className = 'bar-track';
+      const bar = document.createElement('span'); bar.className = 'bar ' + key;
+      bar.style.width = (100*row[key]/scale) + '%'; track.append(bar); bars.append(track);
+    });
+    const count = document.createElement('div'); count.className = 'outcome-count';
+    count.textContent = `${row.corrected} − ${row.introduced} = ${row.net_corrections > 0 ? '+' : ''}${row.net_corrections}`;
+    count.setAttribute('aria-label',`${row.corrected} corrected, ${row.introduced} introduced, ${row.net_corrections} net corrections`);
+    const detail = document.createElement('small');
+    const gain = row.net_corrections / row.n * 100;
+    detail.textContent = `${row.accuracy_percent.toFixed(2)}% accuracy (${gain > 0 ? '+' : ''}${gain.toFixed(2)} pp)`;
+    count.append(detail); item.append(label,bars,count); chart.append(item);
+  });
+}
+if (window.studyResults && datasetSelect) {
+  datasetSelect.addEventListener('change',showOutcomes);
+  modelSelect.addEventListener('change',showOutcomes);
+  showOutcomes();
+}
 if (body && window.studyResults) {
   const datasets = ['Reddit', 'Mixed Emotion', 'Additional Reddit 9000'];
   const methods = ['Direct', 'CoT', 'SELF-DISCOVER'];

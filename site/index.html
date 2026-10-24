@@ -30,6 +30,7 @@
       <a href="assets/architecture.webp" target="_blank" rel="noopener" aria-label="Open the full architecture figure"><img src="assets/architecture.webp" width="2800" height="1059" fetchpriority="high" alt="Full architecture: Reddit preprocessing and data splits, DistilBERT training and calibration, confidence-based routing, LLM re-evaluation, final label selection, and statistical audit."></a>
       <figcaption><strong>Overview of the framework.</strong> Calibrated DistilBERT predictions at or above the confidence threshold retain their labels; the remaining posts are re-evaluated by an LLM. Corrections and newly introduced errors are measured separately. The main Reddit and Mixed Emotion evaluations also informed prompt development; the additional 9,000-post evaluation used a frozen protocol.</figcaption>
     </figure>
+    <nav class="section-links" aria-label="Page sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#results">Results</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
     <section class="prose" id="abstract">
       <h2>Abstract</h2>
       <p>Large language models can reconsider uncertain classifications, but re-evaluating every input increases generation workload and can introduce new errors. We study confidence-guided selective re-evaluation for three-class emotion classification in social media. A temperature-scaled DistilBERT classifier retains high-confidence predictions and routes the remaining posts to Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.</p>
@@ -50,7 +51,7 @@
         <h3>Selective LLM re-evaluation</h3>
         <p>Direct uses one generation call. CoT uses five dialogue turns, including acknowledgment and text-response turns. SELF-DISCOVER constructs a task-level plan from the class policy and 18 researcher-authored reasoning modules, then reuses that plan for a fresh evaluation of each routed post. Plan construction does not receive evaluation posts or their reference labels.</p>
       </div>
-      <figure>
+      <figure class="method-plan">
         <a href="assets/plan-construction.webp" target="_blank" rel="noopener" aria-label="Open the plan construction figure"><img src="assets/plan-construction.webp" loading="lazy" alt="Task-level SELECT, ADAPT, and IMPLEMENT plan construction, followed by fresh per-post execution using the saved model-specific plan."></a>
         <figcaption><strong>SELF-DISCOVER adaptation.</strong> Each model retains its own unedited plan. Evidence-ledger and counterfactual checks are researcher-authored execution instructions, not discoveries made by the model. See the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">exact prompts</a> and <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/plans">saved plans</a>.</figcaption>
       </figure>
@@ -66,10 +67,35 @@
       </div>
       <p class="prose">The protocols differ in label visibility, call structure, and generation budget; the comparison is between complete configurations rather than an isolated test of reasoning components. If the final label cannot be parsed, the Phase 1 prediction is retained.</p>
     </section>
+    <section class="prompt-reader" id="prompt-reader">
+      <h2>Prompts and saved plans</h2>
+      <p>The released templates and unedited task-level plans used in the experiments. Placeholders remain as written; these are protocol materials, not a live model response.</p>
+      <div class="tabs" role="tablist" aria-label="Prompt protocol">
+        <button id="prompt-direct" role="tab" aria-selected="true" aria-controls="prompt-panel" data-prompt="Direct">Direct</button>
+        <button id="prompt-cot" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="CoT">CoT</button>
+        <button id="prompt-sd" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="SELF-DISCOVER">SELF-DISCOVER</button>
+        <button id="prompt-plans" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="Saved plans">Saved plans</button>
+      </div>
+      <div id="prompt-panel" role="tabpanel" aria-labelledby="prompt-direct">
+        <div class="reader-toolbar"><label for="prompt-file">Document</label><select id="prompt-file"></select><a id="prompt-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Source file</a></div>
+        <p id="prompt-description"></p>
+        <pre tabindex="0" aria-label="Exact prompt text"><code id="prompt-text"></code></pre>
+      </div>
+      <noscript><p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Read the prompts in the repository.</a></p></noscript>
+    </section>
     <section id="results">
       <div class="prose">
         <h2>Results</h2>
         <p>The main Reddit and synthetic Mixed Emotion sets were used during prompt development and are exploratory evaluations. The additional 9,000-post run keeps model weights, temperature, threshold, prompts, and the saved plan fixed.</p>
+      </div>
+      <div class="result-explorer">
+        <h3>What changes after re-evaluation?</h3>
+        <p class="gain-equation">Accuracy gain = (corrected errors &minus; introduced errors) / all posts</p>
+        <div class="reader-toolbar"><label for="result-dataset">Dataset</label><select id="result-dataset"><option value="Additional Reddit 9000">Additional Reddit (9,000)</option><option value="Reddit">Reddit (12,000)</option><option value="Mixed Emotion">Mixed Emotion (300)</option></select><label for="result-model">Model</label><select id="result-model"><option>Llama 3</option><option>Llama 2</option></select></div>
+        <p class="explorer-note" id="result-context"></p>
+        <div class="legend" aria-hidden="true"><span>Corrected</span><span>Introduced</span></div>
+        <div id="outcome-chart" role="group" aria-label="Observed correction counts" aria-live="polite"></div>
+        <p class="source-links">Observed counts from the released predictions. Bar lengths use the same scale within each selected comparison.</p>
       </div>
       <div class="table-wrap" tabindex="0" role="region" aria-label="Main results">
         <table class="summary-table">
@@ -136,6 +162,7 @@ python3 -m unittest discover -s tests -v</code></pre>
   </main>
   <footer>Research project materials &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">GitHub</a></footer>
   <script src="results-data.js"></script>
+  <script src="prompt-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
