@@ -35,6 +35,9 @@ class SiteExportTests(unittest.TestCase):
 
     def test_four_manuscript_algorithms_and_case_controls(self):
         html = (ROOT / 'site/index.html').read_text()
+        self.assertIn('id="algorithm-1" open>', html)
+        for number in (2, 3, 4):
+            self.assertNotIn('id="algorithm-%d" open>' % number, html)
         for number in range(1, 5):
             self.assertEqual(html.count('id="algorithm-%d"' % number), 1)
         for title in ('Calibrated confidence-guided routing',
