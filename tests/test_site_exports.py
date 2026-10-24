@@ -81,6 +81,9 @@ class SiteExportTests(unittest.TestCase):
             self.assertIn('href="calibration-core.js"', tutorial)
             self.assertIn('value="600" selected', tutorial)
             self.assertIn('not research results', tutorial)
+            self.assertIn('Temperature Scaling &amp; Calibration', tutorial)
+            self.assertIn('aria-label="Tutorial topics"', tutorial)
+            self.assertEqual(html.count('class="tutorial-cta" href="tutorial.html"'), 2)
 
     def test_cases_match_released_predictions_and_synthetic_text(self):
         exported = payload('case-data.js', 'CASE_DATA')

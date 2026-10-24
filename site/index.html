@@ -24,7 +24,7 @@
       <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/data/mixed_emotion">Dataset</a>
       <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/docs/REPRODUCIBILITY.md">Reproducibility</a>
       <a href="#results">Results</a>
-      <a href="tutorial.html">Calibration tutorial</a>
+      <a class="tutorial-cta" href="tutorial.html">Explore calibration tutorial &rarr;</a>
     </nav>
   </header>
   <main id="main">
@@ -53,7 +53,7 @@
       <div class="prose">
         <div class="section-heading"><span class="section-number">01 / METHOD</span><h2>Confidence first, re-evaluation when needed</h2></div>
         <h3>Confidence-based routing</h3>
-        <p class="tutorial-link"><a href="tutorial.html">Interactive calibration tutorial &rarr;</a><span>Temperature scaling, NLL, Brier score, and ECE.</span></p>
+        <p class="tutorial-link"><a class="tutorial-cta" href="tutorial.html">Explore calibration tutorial &rarr;</a><span>Temperature scaling &middot; NLL &middot; Brier &middot; ECE</span></p>
         <p>Phase 1 predicts Depression, Neutral, or Happy. Temperature scaling adjusts the model's confidence, and a threshold determines which predictions are retained. The selected threshold is <i>&tau;</i> = 0.70: 11,807 of 12,000 calibration posts are accepted, with 1.940% empirical error and a 2.162% one-sided Clopper&ndash;Pearson upper bound.</p>
         <p>The lowest candidate in the prespecified 0.70&ndash;1.00 grid already satisfies the 5% risk budget, so the grid boundary determines the operating point. Temperature fitting and threshold selection use the same calibration partition. The pointwise bound is not a simultaneous post-selection guarantee and does not guarantee the same risk under distribution shift.</p>
       </div>

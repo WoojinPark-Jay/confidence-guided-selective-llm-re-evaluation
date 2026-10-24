@@ -8,7 +8,14 @@
 </head>
 <body class="tutorial-page">
 <main>
-  <header class="tutorial-header"><a href="index.html">&larr; Research project</a><p class="section-number">INTERACTIVE TUTORIAL</p><h1>Confidence is not accuracy.</h1><p>Temperature scaling changes the probability assigned to each class, without changing which class has the highest score.</p><p class="demo-notice">Educational simulation, not research results. These are artificial scores and labels, not generated posts, patient records, or predictions from the manuscript.</p></header>
+  <header class="tutorial-header">
+    <a href="index.html">&larr; Research project</a>
+    <p class="section-number">AN INTERACTIVE TUTORIAL</p>
+    <h1>Temperature Scaling &amp; Calibration</h1>
+    <p class="tutorial-intro">From model scores to calibrated probabilities: explore confidence, compare calibration metrics, and find the temperature that minimizes NLL.</p>
+    <ol class="learning-path" aria-label="Tutorial topics"><li><span>01</span><strong>Probabilities</strong><small>Temperature and confidence</small></li><li><span>02</span><strong>Calibration metrics</strong><small>NLL, Brier and adaptive ECE</small></li><li><span>03</span><strong>Temperature selection</strong><small>The minimum-NLL operating point</small></li></ol>
+    <p class="demo-notice">Educational simulation, not research results. These are artificial scores and labels, not generated posts, patient records, or predictions from the manuscript.</p>
+  </header>
   <div class="experiment-settings">
     <label>Examples <select id="sample-size"><option value="12">12 hand-crafted</option><option value="60">60 simulated</option><option value="600" selected>600 simulated</option></select></label>
     <label>Binning <select id="bin-mode"><option value="width">Equal width / ECE</option><option value="mass">Equal count / adaptive ECE</option></select></label>
