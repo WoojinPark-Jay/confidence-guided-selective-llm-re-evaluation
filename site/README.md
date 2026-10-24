@@ -2,6 +2,10 @@
 
 Static GitHub Pages site for the public reproducibility package.
 
+Build with `python3 scripts/build_site.py` and serve `build/site/` for release QA. The deploy workflow uploads this output, not the source folder. Styles and all three scripts receive content-hashed filenames, preventing new HTML from reusing earlier CSS or JavaScript under unchanged URLs. The HTML includes a readable Direct prompt and fixed-evaluation counts even before scripts initialize.
+
+The October 24 repair also aligns the prompt reader and outcome explorer to the 820px prose width, limits ordinary figures to 960px, retains the wider architecture, and reduces section spacing. It adds plain-language distinctions between instructions and model-generated plans, explains placeholder inputs and task-level reuse, and works through the 30 minus 13 net-correction calculation. All 19 prompt/plan document choices were exercised in the release build, including both saved model plans.
+
 - Source: `site/`
 - Deployment: `.github/workflows/pages.yml`
 - Public URL: <https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/>

@@ -13,6 +13,13 @@ function showPrompt() {
   document.getElementById('prompt-text').textContent = file.text;
   document.getElementById('prompt-source').href = 'https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/' + file.path;
   document.querySelector('.prompt-reader pre').scrollTop = 0;
+  const notes = {
+    'Saved plans': 'This is a task-level procedure generated before post evaluation. It is reused, not regenerated for each post.',
+    'CoT': 'The system message sets the role; the five numbered stages each trigger a model response. The post template supplies {text}.',
+    'SELF-DISCOVER': 'SELECT chooses modules; ADAPT specializes them; IMPLEMENT writes the saved plan. Per-post execution inserts that plan as {structure}, together with {policy} and {text}.',
+    'Direct': '{policy} is the shared label policy; {text} is one post; {phase1_label} is the classifier prediction.'
+  };
+  document.getElementById('prompt-stage-note').textContent = notes[currentGroup];
 }
 function choosePrompt(tab) {
   currentGroup = tab.dataset.prompt;
@@ -28,6 +35,7 @@ function choosePrompt(tab) {
   showPrompt();
 }
 if (window.studyPrompts) {
+  fileSelect.disabled = false;
   promptTabs.forEach((tab,index) => {
     tab.addEventListener('click', () => choosePrompt(tab));
     tab.addEventListener('keydown', event => {

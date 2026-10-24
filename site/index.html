@@ -69,7 +69,7 @@
     </section>
     <section class="prompt-reader" id="prompt-reader">
       <h2>Prompts and saved plans</h2>
-      <p>The released templates and unedited task-level plans used in the experiments. Placeholders remain as written; these are protocol materials, not a live model response.</p>
+      <p><strong>Prompts are instructions; saved plans are model outputs.</strong> Direct asks for one label. CoT divides re-evaluation into five calls. SELF-DISCOVER first builds a reusable task-level plan, then applies it to each routed post.</p>
       <div class="tabs" role="tablist" aria-label="Prompt protocol">
         <button id="prompt-direct" role="tab" aria-selected="true" aria-controls="prompt-panel" data-prompt="Direct">Direct</button>
         <button id="prompt-cot" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="CoT">CoT</button>
@@ -77,9 +77,23 @@
         <button id="prompt-plans" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="Saved plans">Saved plans</button>
       </div>
       <div id="prompt-panel" role="tabpanel" aria-labelledby="prompt-direct">
-        <div class="reader-toolbar"><label for="prompt-file">Document</label><select id="prompt-file"></select><a id="prompt-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Source file</a></div>
-        <p id="prompt-description"></p>
-        <pre tabindex="0" aria-label="Exact prompt text"><code id="prompt-text"></code></pre>
+        <div class="reader-toolbar"><label for="prompt-file">Stage</label><select id="prompt-file" disabled><option value="0">Prompt</option></select><a id="prompt-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/prompts/direct/prompt.txt">Source file</a></div>
+        <p id="prompt-description">Direct receives the post, shared classification policy, and Phase 1 label. It returns a final label without a rationale.</p>
+        <p id="prompt-stage-note" class="stage-note">{policy} is the shared label policy; {text} is one post; {phase1_label} is the classifier's prediction.</p>
+        <pre tabindex="0" aria-label="Exact prompt text"><code id="prompt-text">You are an expert annotator for research-oriented, non-clinical emotion classification.
+
+{policy}
+
+Text:
+{text}
+
+The Phase 1 classifier predicted: {phase1_label}
+
+Select the final label that best represents the text. Return no rationale and end with exactly one line in this form:
+Final label: Depression
+or Final label: Neutral
+or Final label: Happy</code></pre>
+        <p class="source-links" id="prompt-status">Original files: <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">prompts</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/plans">saved plans</a>.</p>
       </div>
       <noscript><p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Read the prompts in the repository.</a></p></noscript>
     </section>
@@ -90,11 +104,12 @@
       </div>
       <div class="result-explorer">
         <h3>What changes after re-evaluation?</h3>
+        <p>In the fixed 9,000-post evaluation, only 111 posts reached the LLM. SELF-DISCOVER corrected 30 errors but changed 13 correct predictions to errors: 17 more correct predictions overall, or +0.19 percentage points. The other 8,889 predictions stayed with Phase 1.</p>
         <p class="gain-equation">Accuracy gain = (corrected errors &minus; introduced errors) / all posts</p>
         <div class="reader-toolbar"><label for="result-dataset">Dataset</label><select id="result-dataset"><option value="Additional Reddit 9000">Additional Reddit (9,000)</option><option value="Reddit">Reddit (12,000)</option><option value="Mixed Emotion">Mixed Emotion (300)</option></select><label for="result-model">Model</label><select id="result-model"><option>Llama 3</option><option>Llama 2</option></select></div>
-        <p class="explorer-note" id="result-context"></p>
+        <p class="explorer-note" id="result-context">Fixed-protocol evaluation. 111 of 9,000 posts routed; Phase 1 accuracy 97.58%.</p>
         <div class="legend" aria-hidden="true"><span>Corrected</span><span>Introduced</span></div>
-        <div id="outcome-chart" role="group" aria-label="Observed correction counts" aria-live="polite"></div>
+        <div id="outcome-chart" role="group" aria-label="Observed correction counts" aria-live="polite"><p>Direct: 32 corrected &minus; 19 introduced = +13. CoT: 28 &minus; 15 = +13. SELF-DISCOVER: 30 &minus; 13 = +17.</p></div>
         <p class="source-links">Observed counts from the released predictions. Bar lengths use the same scale within each selected comparison.</p>
       </div>
       <div class="table-wrap" tabindex="0" role="region" aria-label="Main results">

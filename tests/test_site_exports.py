@@ -2,6 +2,9 @@
 import json
 from pathlib import Path
 import unittest
+import tempfile
+from html.parser import HTMLParser
+from scripts.build_site import build
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -14,6 +17,29 @@ def payload(name, variable):
 
 
 class SiteExportTests(unittest.TestCase):
+    def test_release_uses_fingerprinted_assets(self):
+        class Assets(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.urls = []
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == 'script':
+                    self.urls.append(attrs['src'])
+                if tag == 'link' and attrs.get('rel') == 'stylesheet':
+                    self.urls.append(attrs['href'])
+        with tempfile.TemporaryDirectory() as directory:
+            output = build(directory)
+            html = (output / 'index.html').read_text()
+            parser = Assets()
+            parser.feed(html)
+            self.assertEqual(len(parser.urls), 4)
+            for url in parser.urls:
+                self.assertRegex(url, r'\.[0-9a-f]{12}\.(css|js)$')
+                self.assertTrue((output / url).is_file())
+            self.assertIn('Final label: Depression', html)
+            self.assertIn('SELF-DISCOVER: 30 &minus; 13 = +17', html)
+
     def test_prompt_text_matches_public_files(self):
         groups = payload('prompt-data.js', 'studyPrompts')
         self.assertEqual(set(groups), {'Direct', 'CoT', 'SELF-DISCOVER', 'Saved plans'})
