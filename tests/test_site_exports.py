@@ -1,6 +1,7 @@
 """Public site displays the released evidence without rewriting it."""
 import json
 import csv
+import struct
 from pathlib import Path
 import unittest
 import tempfile
@@ -18,6 +19,20 @@ def payload(name, variable):
 
 
 class SiteExportTests(unittest.TestCase):
+    def test_original_algorithm_figures_and_research_summary(self):
+        html = (ROOT / 'site/index.html').read_text()
+        for number in range(1, 5):
+            relative = 'assets/algorithm-%d.png' % number
+            self.assertIn('src="' + relative + '"', html)
+            data = (ROOT / 'site' / relative).read_bytes()
+            self.assertEqual(data[:8], b'\x89PNG\r\n\x1a\n')
+            width, height = struct.unpack('>II', data[16:24])
+            self.assertGreaterEqual(width, 1000)
+            self.assertGreater(height, 500)
+        self.assertEqual(html.count('<dt><span>'), 4)
+        self.assertIn('id="findings"', html)
+        self.assertIn('<details class="protocol-details">', html)
+
     def test_four_manuscript_algorithms_and_case_controls(self):
         html = (ROOT / 'site/index.html').read_text()
         for number in range(1, 5):

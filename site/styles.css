@@ -126,11 +126,11 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
 .procedure-map strong { font-size: 17px; display: block; margin: 4px 0; }
 .algorithm-note { font-size: 14px; color: #555; margin: 12px 0 22px; }
 .paper-algorithm { margin: 0; border-bottom: 1px solid #aaa; }
-.paper-algorithm summary { display: grid; grid-template-columns: 112px 1fr auto; gap: 12px; padding: 17px 0; align-items: baseline; color: #242424; font-size: 17px; }
-.paper-algorithm summary::after { content: '+'; grid-column: 3; grid-row: 1; padding-left: 12px; }
-.paper-algorithm[open] summary::after { content: '\2212'; }
-.paper-algorithm summary small { display: none; }
-.paper-algorithm summary::-webkit-details-marker { display: none; }
+.paper-algorithm > summary { display: grid; grid-template-columns: 112px 1fr auto; gap: 12px; padding: 17px 0; align-items: baseline; color: #242424; font-size: 17px; }
+.paper-algorithm > summary::after { content: '+'; grid-column: 3; grid-row: 1; padding-left: 12px; }
+.paper-algorithm[open] > summary::after { content: '\2212'; }
+.paper-algorithm > summary small { display: none; }
+.paper-algorithm > summary::-webkit-details-marker { display: none; }
 .algorithm-number { font-size: 14px; color: #7b263b; }
 .algorithm-body { border-top: 2px solid #333; padding: 16px 20px 20px; margin-bottom: 20px; background: #fafafa; font-size: 16px; }
 .algorithm-body p { margin-bottom: 6px; }
@@ -181,10 +181,10 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
   .case-decisions { gap: 12px; }
   .case-decisions strong { font-size: 21px; }
   .case-record-line { flex-wrap: wrap; }
-  .paper-algorithm summary { grid-template-columns: 1fr 24px; gap: 4px; }
-  .paper-algorithm summary .algorithm-number { grid-column: 1; }
-  .paper-algorithm summary > span:nth-child(2) { grid-column: 1; }
-  .paper-algorithm summary::after { grid-column: 2; }
+  .paper-algorithm > summary { grid-template-columns: 1fr 24px; gap: 4px; }
+  .paper-algorithm > summary .algorithm-number { grid-column: 1; }
+  .paper-algorithm > summary > span:nth-child(2) { grid-column: 1; }
+  .paper-algorithm > summary::after { grid-column: 2; }
   .section-heading h2 { font-size: 25px; }
 }
 @media(max-width: 600px) {
@@ -208,4 +208,41 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
   .teaser { margin-top: 10px; }
   figcaption { font-size: 13px; }
   footer { margin-left: 20px; margin-right: 20px; }
+}
+
+/* Primary evidence precedes implementation details. */
+.contributions,.findings { max-width: 1032px; margin: 48px auto; }
+.contribution-list { margin: 24px 0 30px; border-top: 2px solid #333; }
+.contribution-list > div { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0,1.35fr); gap: 32px; padding: 18px 0; border-bottom: 1px solid #ddd; }
+.contribution-list dt { font-size: 18px; font-weight: bold; line-height: 1.5; }
+.contribution-list dt span { display: inline-block; font-size: 13px; font-weight: normal; color: #7b263b; margin-right: 12px; }
+.contribution-list dd { margin: 0; font-size: 17px; line-height: 1.6; color: #444; }
+.primary-finding { border-block: 1px solid #aaa; padding: 20px 0; }
+.finding-label { font: 12px/1.5 Arial,sans-serif; color: #7b263b; }
+.primary-finding p { font-size: 21px; line-height: 1.55; margin: 10px 0; max-width: 900px; }
+.primary-finding a { font-size: 14px; }
+.abstract-disclosure { margin-top: 0; border-bottom: 1px solid #ddd; }
+.abstract-disclosure > summary { font-size: 18px; color: #333; }
+.abstract-disclosure p { font-size: 17px; }
+.protocol-details { max-width: 820px; margin: 20px auto 0; border-block: 1px solid #ddd; }
+.protocol-details > summary { font-size: 16px; color: #444; }
+.protocol-details p { font-size: 15px; }
+.original-algorithm { max-width: 780px; margin: 20px auto 12px; }
+.algorithm-image-scroll { overflow-x: auto; }
+.algorithm-image-scroll img { width: 100%; min-width: 640px; }
+.original-algorithm figcaption { font-size: 13px; margin: 12px 0 0; }
+.algorithm-transcript { max-width: 780px; margin: 8px auto 20px; }
+.algorithm-transcript > summary { font-size: 14px; font-weight: normal; color: #555; }
+.findings { border-top: 2px solid #333; padding-top: 28px; }
+.finding-list { list-style: decimal-leading-zero; padding-left: 30px; margin: 20px 0; }
+.finding-list > li { padding: 18px 0 20px 10px; border-bottom: 1px solid #ddd; }
+.finding-list > li::marker { color: #7b263b; font-size: 14px; }
+.finding-list h3 { font-size: 20px; margin: 0 0 8px; }
+.finding-list p { font-size: 17px; max-width: 860px; margin: 0 0 8px; }
+.finding-list a { font-size: 14px; }
+.findings-scope { font-size: 15px; color: #555; max-width: 900px; }
+@media(max-width: 760px) {
+  .contribution-list > div { grid-template-columns: 1fr; gap: 8px; padding: 16px 0; }
+  .primary-finding p { font-size: 19px; }
+  .original-algorithm { margin: 14px 0; }
 }
