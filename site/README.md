@@ -14,6 +14,10 @@ Run `python3 scripts/build_site_results.py` after changing the recomputed metric
 
 ## Project-page quality review
 
-Compared against the author's bounded-history-agreement and pec-news-audit project pages. The revision tightens the title and result hierarchy, brings frozen-protocol evidence forward, gives each multi-panel figure full content width, and adds the actual task-level planning diagram with links to prompts and saved plans. It distinguishes exploratory and frozen evaluations, explains the non-binding threshold, and connects annotation and generation-workload claims to public source files. The provisional BibTeX was removed until the bibliographic record is final.
+The initial dashboard-like presentation was replaced after author feedback. Design references were the researcher-maintained [Nerfies](https://nerfies.github.io/) and [Ref-NeRF](https://dorverbin.github.io/refnerf/) pages, inspected for title/author hierarchy, representative imagery, and straightforward section structure. Their source code, text, and media were not copied.
 
-Checks include dataset-tab switching, the 15 rendered comparison rows, figure expansion, mobile document width, and repository release validation. The manuscript and experiment results are unchanged.
+The full manuscript architecture is now the first figure below the title, authors, and resource links. The page uses a white background, a single reading column, ordinary section headings, full-width figures, and conventional tables. Decorative cards, oversized metric displays, marketing-style headings, numbered sections, the sticky branded menu, and interactive dataset tabs were removed. The 15-condition table remains available in a native disclosure. Figures link directly to their high-resolution originals.
+
+The page distinguishes exploratory and frozen evaluations, explains the non-binding threshold, and connects annotation and generation-workload claims to public source files. No provisional citation or unpublished manuscript PDF is provided. The architecture is reproduced unchanged; its caption explicitly clarifies that the main evaluation sets also informed prompt development.
+
+Checks include architecture rendering at 2,800 pixels, 15 rendered comparison rows, disclosure interaction, mobile document width, local/repository link targets, and repository release validation. The manuscript and experiment results are unchanged.
