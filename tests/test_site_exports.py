@@ -71,6 +71,16 @@ class SiteExportTests(unittest.TestCase):
                 self.assertTrue((output / url).is_file())
             self.assertIn('Final label: Depression', html)
             self.assertIn('SELF-DISCOVER: 30 &minus; 13 = +17', html)
+            tutorial = (output / 'tutorial.html').read_text()
+            parser = Assets()
+            parser.feed(tutorial)
+            self.assertEqual(len(parser.urls), 4)
+            for url in parser.urls:
+                self.assertRegex(url, r'\.[0-9a-f]{12}\.(css|js)$')
+                self.assertTrue((output / url).is_file())
+            self.assertIn('href="calibration-core.js"', tutorial)
+            self.assertIn('value="600" selected', tutorial)
+            self.assertIn('not research results', tutorial)
 
     def test_cases_match_released_predictions_and_synthetic_text(self):
         exported = payload('case-data.js', 'CASE_DATA')

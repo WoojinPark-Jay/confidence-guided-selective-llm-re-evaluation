@@ -4,6 +4,22 @@
 .tutorial-header .section-number { margin-top: 28px; }
 .tutorial-header h1 { font-size: 34px; margin: 8px 0 18px; }
 .demo-notice { font-size: 14px; color: #666; border-left: 2px solid #7b263b; padding-left: 14px; }
+.experiment-settings { display: flex; gap: 18px; flex-wrap: wrap; border-top: 1px solid #ccc; padding-top: 16px; margin-top: 20px; }
+.experiment-settings label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.experiment-settings select { font-size: 14px; }
+#data-description { margin-top: 10px; }
+.temperature-presets { border: 0; padding: 0; margin: 16px 0 8px; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.temperature-presets legend { font-size: 13px; color: #666; margin-bottom: 6px; }
+.temperature-presets label { font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.temperature-presets input { accent-color: #7b263b; }
+#state-explanation { min-height: 44px; margin: 0; }
+.minimum-dot { fill: none; stroke: #36745e; stroke-width: 2; }
+.optimization-details { border-block: 1px solid #ccc; }
+.optimization-details p,.optimization-details li { font-size: 15px; line-height: 1.5; }
+.optimization-details p { margin: 10px 0; }
+.optimization-details ol { padding-left: 22px; }
+.optimization-details table,.bin-details table { font-size: 14px; }
+.lab-context details p { font-size: 14px; }
 .temperature-controls { margin: 28px 0 24px; padding: 18px 0; border-block: 1px solid #999; }
 .control-heading { display: flex; align-items: center; gap: 14px; }
 .control-heading label { font-weight: bold; font-size: 20px; }

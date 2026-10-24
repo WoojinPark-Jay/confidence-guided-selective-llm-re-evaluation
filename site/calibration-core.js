@@ -13,20 +13,45 @@
     const sum=e.reduce((a,b)=>a+b,0);
     return e.map(x=>x/sum);
   }
-  function metrics(data,t,binCount=5) {
+  function simulatedSamples(n=600,seed=20261024) {
+    // Fixed-seed simulation: sample labels from softer probabilities, not a real model.
+    let state=seed>>>0;
+    const random=()=>{state=(Math.imul(1664525,state)+1013904223)>>>0;return state/4294967296;};
+    return Array.from({length:n},()=>{
+      const z=Array.from({length:3},()=>random()*5);
+      const p=probabilities(z,1.8),u=random();
+      const y=u<p[0]?0:u<p[0]+p[1]?1:2;
+      return {z,y};
+    });
+  }
+  function metrics(data,t,binCount=5,mode='width') {
     if (!data.length) throw new Error('Empty sample');
+    if(!Number.isInteger(binCount)||binCount<1) throw new Error('Invalid bin count');
+    if(!['width','mass'].includes(mode)) throw new Error('Invalid bin mode');
     const bins=Array.from({length:binCount},(_,i)=>({lower:i/binCount,upper:(i+1)/binCount,n:0,confidence:0,accuracy:0}));
     let nll=0,brier=0,correct=0;
     const rows=data.map(sample=>{
       const q=probabilities(sample.z,t),confidence=Math.max(...q),prediction=q.indexOf(confidence);
       const hit=Number(prediction===sample.y);
-      const loss=-Math.log(q[sample.y]);
+      const scaled=sample.z.map(v=>v/t),maximum=Math.max(...scaled);
+      const loss=maximum+Math.log(scaled.reduce((s,v)=>s+Math.exp(v-maximum),0))-scaled[sample.y];
       const score=q.reduce((sum,p,k)=>sum+(p-Number(k===sample.y))**2,0);
-      const bin=bins[Math.min(binCount-1,Math.floor(confidence*binCount))];
-      bin.n++;bin.confidence+=confidence;bin.accuracy+=hit;
       nll+=loss;brier+=score;correct+=hit;
       return {...sample,q,confidence,prediction,hit,loss,score};
     });
+    const add=(bin,row)=>{bin.n++;bin.confidence+=row.confidence;bin.accuracy+=row.hit;};
+    if(mode==='width') rows.forEach(row=>add(bins[Math.min(binCount-1,Math.floor(row.confidence*binCount))],row));
+    else {
+      const sorted=[...rows].sort((a,b)=>a.confidence-b.confidence);
+      let offset=0;
+      bins.forEach((bin,i)=>{
+        const size=Math.floor(data.length/binCount)+Number(i<data.length%binCount);
+        const group=sorted.slice(offset,offset+size);offset+=size;
+        bin.lower=group.length?group[0].confidence:null;
+        bin.upper=group.length?group[group.length-1].confidence:null;
+        group.forEach(row=>add(bin,row));
+      });
+    }
     let ece=0;
     bins.forEach(bin=>{
       if(bin.n){bin.confidence/=bin.n;bin.accuracy/=bin.n;}
@@ -35,7 +60,7 @@
     });
     return {nll:nll/data.length,brier:brier/data.length,ece,accuracy:correct/data.length,bins,rows};
   }
-  const api={samples,probabilities,metrics};
+  const api={samples,simulatedSamples,probabilities,metrics};
   if(typeof module!=='undefined'&&module.exports) module.exports=api;
   else root.calibration=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -21,9 +21,10 @@ def build(destination=None):
             source = Path(name)
             versioned = source.stem + '.' + hashlib.sha256(data).hexdigest()[:12] + source.suffix
             (output / versioned).write_bytes(data)
-            reference = '"' + name + '"'
+            attribute = 'src' if source.suffix == '.js' else 'href'
+            reference = attribute + '="' + name + '"'
             assert html.count(reference) == 1, name
-            html = html.replace(reference, '"' + versioned + '"')
+            html = html.replace(reference, attribute + '="' + versioned + '"')
         (output / page).write_text(html)
     return output
 
