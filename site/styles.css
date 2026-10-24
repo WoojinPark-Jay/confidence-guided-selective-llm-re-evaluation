@@ -264,3 +264,5 @@ body:not(.tutorial-page) .case-decisions strong { font-size: 24px; }
   body:not(.tutorial-page) .section-heading h2 { font-size: 23px; }
   body:not(.tutorial-page) .case-decisions strong { font-size: 21px; }
 }
+.finding-target { scroll-margin-top: 24px; }
+.finding-target:target { outline: 1px solid #9aaab6; outline-offset: 8px; }

@@ -99,6 +99,14 @@ class SiteExportTests(unittest.TestCase):
         self.assertNotEqual(exported['cases'][1]['final_label'], exported['cases'][1]['target_label'])
         self.assertEqual(exported['cases'][2]['parsed_label'], '')
 
+    def test_finding_links_have_distinct_evidence_targets(self):
+        html = (ROOT / 'site/index.html').read_text()
+        for target, label in [('routing-analysis', 'Routing analysis'),
+                              ('paired-comparisons', 'Paired comparisons'),
+                              ('generation-workload', 'Generation workload')]:
+            self.assertIn(f'href="#{target}">{label} &rarr;</a>', html)
+            self.assertEqual(html.count(f'id="{target}"'), 1)
+
     def test_prompt_text_matches_public_files(self):
         groups = payload('prompt-data.js', 'studyPrompts')
         self.assertEqual(set(groups), {'Direct', 'CoT', 'SELF-DISCOVER', 'Saved plans'})

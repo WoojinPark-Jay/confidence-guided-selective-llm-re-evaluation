@@ -240,7 +240,9 @@ or Final label: Happy</code></pre>
         <figcaption><strong>Corrected and introduced errors.</strong> Net correction is the number of Phase 1 errors corrected minus the number of previously correct predictions changed to errors.</figcaption>
       </figure>
       <div class="prose">
+        <h3 id="paired-comparisons" class="finding-target" tabindex="-1">Paired statistical comparisons</h3>
         <p>On the additional evaluation, the exact McNemar <i>p</i>-value for SELF-DISCOVER versus Phase 1 is 0.0137 (Holm-adjusted <i>p</i> = 0.0412 within the three-test family). Direct and CoT each yield 13 net corrections. Their accuracy differences from SELF-DISCOVER are not significant (both Holm-adjusted <i>p</i> = 0.9614).</p>
+        <h3 id="generation-workload" class="finding-target" tabindex="-1">Recorded generation workload</h3>
         <p>Recorded model-generation time on an NVIDIA L4 is 54.9 s for Direct, 3,116.4 s for CoT, and 2,568.5 s for SELF-DISCOVER. Thus, Direct produces four fewer net corrections than SELF-DISCOVER at about 2.1% of its recorded generation time. These measurements cover generation, not total pipeline runtime.</p>
       </div>
       <details>
@@ -255,7 +257,7 @@ or Final label: Happy</code></pre>
         <noscript><p>The full results are available in the linked metrics file below.</p></noscript>
       </details>
       <p class="source-links"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_metrics.json">Metrics</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_statistics.json">Paired statistical tests</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/additional9000_generation_workload.csv">Generation workload</a></p>
-      <figure>
+      <figure id="routing-analysis" class="finding-target" tabindex="-1">
         <a href="assets/routing.webp" target="_blank" rel="noopener" aria-label="Open the routing analysis figure"><img src="assets/routing.webp" loading="lazy" alt="Confidence distributions, error capture by routing budget, and error concentration in routed posts."></a>
         <figcaption><strong>Routing analysis.</strong> On Reddit, routed posts have a 44.95% Phase 1 error rate compared with 3.08% over the full set (14.58 times higher). Confidence routing concentrates errors but leaves some errors in the accepted set.</figcaption>
       </figure>
@@ -267,9 +269,9 @@ or Final label: Happy</code></pre>
     <section id="findings" class="findings">
       <div class="section-heading"><span class="section-number">KEY FINDINGS</span><h2>What the results establish</h2></div>
       <ol class="finding-list">
-        <li><div><h3>Confidence routing concentrates errors.</h3><p>In the main Reddit evaluation, 1.82% of posts contain 26.49% of Phase 1 errors. Their error rate is 44.95%, compared with 3.08% overall. Routing identifies a difficult subset, but leaves errors outside it.</p></div><a href="#results">Routing analysis &rarr;</a></li>
-        <li><div><h3>Selective re-evaluation produces a modest net gain.</h3><p>On the fixed-protocol same-source 9,000-post set, SELF-DISCOVER raises accuracy from 97.58% to 97.77%, with 17 net corrections. The Phase 1 comparison is significant under the specified three-test Holm adjustment (p = 0.0412).</p></div><a href="#results">Paired comparisons &rarr;</a></li>
-        <li><div><h3>Protocol choice is an accuracy&ndash;workload tradeoff.</h3><p>Direct yields 13 net corrections versus 17 for SELF-DISCOVER at about 2.1% of its recorded generation time. Their accuracy difference is not significant on the additional set; the highest observed accuracy is not evidence of universal superiority.</p></div><a href="#results">Generation workload &rarr;</a></li>
+        <li><div><h3>Confidence routing concentrates errors.</h3><p>In the main Reddit evaluation, 1.82% of posts contain 26.49% of Phase 1 errors. Their error rate is 44.95%, compared with 3.08% overall. Routing identifies a difficult subset, but leaves errors outside it.</p></div><a href="#routing-analysis">Routing analysis &rarr;</a></li>
+        <li><div><h3>Selective re-evaluation produces a modest net gain.</h3><p>On the fixed-protocol same-source 9,000-post set, SELF-DISCOVER raises accuracy from 97.58% to 97.77%, with 17 net corrections. The Phase 1 comparison is significant under the specified three-test Holm adjustment (p = 0.0412).</p></div><a href="#paired-comparisons">Paired comparisons &rarr;</a></li>
+        <li><div><h3>Protocol choice is an accuracy&ndash;workload tradeoff.</h3><p>Direct yields 13 net corrections versus 17 for SELF-DISCOVER at about 2.1% of its recorded generation time. Their accuracy difference is not significant on the additional set; the highest observed accuracy is not evidence of universal superiority.</p></div><a href="#generation-workload">Generation workload &rarr;</a></li>
       </ol>
       <p class="findings-scope">These findings concern community-derived proxy labels. The main Reddit and Mixed Emotion evaluations informed prompt development; the additional evaluation used a fixed protocol. Clinical validity and cross-platform generalization are not established.</p>
     </section>

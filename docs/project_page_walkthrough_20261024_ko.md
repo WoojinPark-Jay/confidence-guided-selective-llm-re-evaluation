@@ -62,6 +62,12 @@
 
 ## Calibration 인터랙티브 튜토리얼 추가
 
+### Key findings 링크 수정
+
+- 세 근거 링크가 모두 `#results`로 이동하던 문제를 수정했다.
+- Routing analysis는 라우팅 그림, Paired comparisons는 McNemar/Holm 비교 설명, Generation workload는 기록된 생성 시간 설명으로 각각 직접 이동한다.
+- 통계 및 생성 시간 설명에 소제목을 추가하고, 도착 위치에 얇은 테두리를 표시한다. 각 링크의 고유 목적지 존재 여부를 자동 검사한다.
+
 - 메인 페이지 상단과 calibration 설명에 별도 `tutorial.html` 링크를 추가했다. 메인 연구 소개가 길어지지 않도록 튜토리얼을 분리했다.
 - 온도 T 슬라이더, 재생/정지, 초기화, 교육용 NLL 최소값 버튼을 제공한다. 클래스 확률, NLL/Brier/ECE 값과 곡선, reliability diagram, ECE bin별 계산이 함께 갱신된다.
 - softmax, NLL, multiclass Brier, ECE 수식을 MathML로 표시하고 각 지표의 의미와 차이를 설명한다.
