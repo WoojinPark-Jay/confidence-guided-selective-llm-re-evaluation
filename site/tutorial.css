@@ -44,12 +44,14 @@
 .reference-class > span:first-child { font-weight: bold; }
 .bin-details { border-block: 1px solid #ccc; }
 .bin-details p { font-size: 14px; }
-.equation-guide { border-top: 2px solid #333; padding-top: 28px; }
-.equation-guide > h2,.lab-context h2 { text-align: left; font-size: 26px; }
-.equation-guide article { border-bottom: 1px solid #ddd; padding: 12px 0 22px; }
-.equation-guide h3 { margin-top: 12px; }
-.equation-guide math { font-size: 23px; margin: 20px 0; overflow-x: auto; padding-block: 10px; }
-.equation-guide p { max-width: 850px; margin-bottom: 0; }
+.equation-guide { border-top: 2px solid #333; padding-top: 16px; margin-top: 24px; }
+.equation-guide > h2,.lab-context h2 { text-align: left; font-size: 22px; margin: 0 0 12px; }
+.equation-guide article { border-bottom: 1px solid #ddd; padding: 10px 0 14px; }
+.equation-guide h3 { font-size: 18px; margin: 0 0 6px; }
+.equation-guide math { font-size: 19px; margin: 8px 0; overflow-x: auto; padding-block: 4px; }
+.equation-guide p { max-width: 850px; margin: 6px 0 0; font-size: 16px; line-height: 1.5; }
+.lab-context { margin-top: 24px; }
+.lab-context p { font-size: 16px; line-height: 1.5; }
 @media(max-width: 700px) {
   .tutorial-page main { padding: 24px 18px; }
   .tutorial-header h1 { font-size: 28px; }
@@ -61,6 +63,6 @@
   .lab-metrics article > span { min-height: 40px; }
   .lab-details { grid-template-columns: 1fr; gap: 24px; }
   .probability-row { grid-template-columns: 125px 1fr 45px; }
-  .equation-guide math { font-size: 19px; }
+  .equation-guide math { font-size: 18px; }
 }
 @media(prefers-reduced-motion: reduce) { .probability-fill { transition: none; } }
