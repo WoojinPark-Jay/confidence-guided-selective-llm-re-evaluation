@@ -28,21 +28,27 @@
     </nav>
   </header>
   <main id="main">
+    <p class="research-question">Can an LLM improve classification by revisiting only the uncertain predictions?</p>
     <figure class="teaser">
       <a href="assets/architecture.webp" target="_blank" rel="noopener" aria-label="Open the full architecture figure"><img src="assets/architecture.webp" width="2800" height="1059" fetchpriority="high" alt="Full architecture: Reddit preprocessing and data splits, DistilBERT training and calibration, confidence-based routing, LLM re-evaluation, final label selection, and statistical audit."></a>
-      <figcaption><strong>Overview of the framework.</strong> Calibrated DistilBERT predictions at or above the confidence threshold retain their labels; the remaining posts are re-evaluated by an LLM. Corrections and newly introduced errors are measured separately. The main Reddit and Mixed Emotion evaluations also informed prompt development; the additional 9,000-post evaluation used a frozen protocol.</figcaption>
+      <figcaption><strong>Classify &rarr; route &rarr; re-evaluate.</strong> DistilBERT retains high-confidence predictions; only uncertain posts reach the LLM. The evaluation counts both corrected and newly introduced errors.</figcaption>
     </figure>
+    <div class="evidence-overview" aria-label="Fixed-protocol evaluation summary">
+      <p class="evidence-context">Llama 3 SELF-DISCOVER &middot; fixed-protocol evaluation &middot; 9,000 posts</p>
+      <dl class="evidence-metrics"><div><dt>Posts re-evaluated</dt><dd>1.23% <span>111 of 9,000</span></dd></div><div><dt>Net corrections</dt><dd>+17 <span>30 corrected &minus; 13 introduced</span></dd></div><div><dt>Final accuracy</dt><dd>97.77% <span>from 97.58% with Phase 1</span></dd></div></dl>
+      <p class="evidence-scope">Improvement over Phase 1; no significant accuracy advantage over Direct or CoT on this set. <a href="#results">Results and statistical comparisons &rarr;</a></p>
+    </div>
     <nav class="section-links" aria-label="Page sections"><a href="#contributions">Contributions</a><a href="#findings">Findings</a><a href="#method">Method</a><a href="#algorithm">Algorithm</a><a href="#case-study">Case walkthrough</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#results">Results</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
     <section class="contributions" id="contributions">
-      <div class="section-heading"><span class="section-number">RESEARCH CONTRIBUTIONS</span><h2>Selective re-evaluation, measured end to end</h2></div>
-      <p class="section-intro">The study asks when an LLM should reconsider a classifier's prediction, and whether its corrections outweigh the errors it introduces.</p>
+      <div class="section-heading"><span class="section-number">RESEARCH CONTRIBUTIONS</span><h2>What this study adds</h2></div>
+      <p class="section-intro">A fixed routing policy decides which posts reach the LLM. End-to-end evaluation measures whether the corrections outweigh the new errors.</p>
       <dl class="contribution-list">
-        <div><dt><span>01</span> A selective two-phase pipeline</dt><dd>A compact classifier retains high-confidence predictions; only calibration-defined low-confidence posts reach the LLM.</dd></div>
-        <div><dt><span>02</span> A fixed, reproducible routing policy</dt><dd>Temperature scaling and a risk-bound criterion select a maximum-coverage threshold from a prespecified grid, before held-out evaluation.</dd></div>
-        <div><dt><span>03</span> Separate audits of routing and correction</dt><dd>Error capture measures what the router finds. Corrected and introduced errors measure what the re-evaluator changes. The main comparison crosses two LLMs with three protocols on matched routed inputs.</dd></div>
-        <div><dt><span>04</span> Task-adapted SELF-DISCOVER</dt><dd>An emotion-oriented module bank, a reusable model-generated plan, and researcher-authored evidence checks are evaluated on exploratory sets and a separate fixed-protocol 9,000-post set.</dd></div>
+        <div><dt><span>01</span> Selective re-evaluation</dt><dd>Keep confident classifier predictions. Send only low-confidence posts to the LLM.</dd></div>
+        <div><dt><span>02</span> Calibration-defined routing</dt><dd>Fit temperature and select a threshold on calibration data, then freeze both for evaluation.</dd></div>
+        <div><dt><span>03</span> Corrections and new errors</dt><dd>Audit error capture separately from net corrections, comparing two LLMs and three protocols on matched routed inputs.</dd></div>
+        <div><dt><span>04</span> Task-adapted SELF-DISCOVER</dt><dd>Combine emotion-oriented modules, a reusable model-generated plan, and researcher-authored evidence checks.</dd></div>
       </dl>
-      <div class="primary-finding"><span class="finding-label">MAIN FINDING</span><p>On the fixed-protocol 9,000-post evaluation, Llama 3 SELF-DISCOVER re-evaluates <strong>111 posts (1.23%)</strong> and yields <strong>17 net corrections</strong>: 30 corrected errors minus 13 introduced errors.</p><a href="#results">Full results and statistical comparisons &rarr;</a></div>
+      <p class="evaluation-scope">The main Reddit and Mixed Emotion evaluations informed prompt development and are exploratory. The separate 9,000-post evaluation used a fixed protocol. Labels are research proxies, not clinical diagnoses.</p>
     </section>
     <section class="prose" id="abstract"><details class="abstract-disclosure"><summary>Abstract</summary>
 

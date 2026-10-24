@@ -32,6 +32,11 @@ class SiteExportTests(unittest.TestCase):
         self.assertEqual(html.count('<dt><span>'), 4)
         self.assertIn('id="findings"', html)
         self.assertIn('<details class="protocol-details">', html)
+        self.assertIn('aria-label="Fixed-protocol evaluation summary"', html)
+        self.assertIn('1.23% <span>111 of 9,000', html)
+        self.assertIn('+17 <span>30 corrected &minus; 13 introduced', html)
+        self.assertIn('97.77% <span>from 97.58%', html)
+        self.assertLess(html.index('class="evidence-overview"'), html.index('id="contributions"'))
 
     def test_four_manuscript_algorithms_and_case_controls(self):
         html = (ROOT / 'site/index.html').read_text()
