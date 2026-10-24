@@ -2,6 +2,8 @@
 
 Reproducibility package for **“Confidence-Guided Selective LLM Re-Evaluation for Emotion Classification in Social Media.”**
 
+**Project page:** <https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/>
+
 Lead authors (equal contribution): **Woojin Park** and **Sangyun Kang**.
 
 The system uses a calibrated DistilBERT classifier for Phase 1 and routes only low-confidence cases to Phase 2. Phase 2 compares Direct, chain-of-thought (CoT), and the final task-adapted SELF-DISCOVER protocol with Llama 2 and Llama 3. A parsed Phase 2 label replaces the Phase 1 prediction only for a routed case; if parsing fails, the Phase 1 label is retained.
