@@ -11,7 +11,7 @@ def build(destination=None):
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ROOT / 'site', output, dirs_exist_ok=True)
     html = (output / 'index.html').read_text()
-    for name in ('styles.css', 'app.js', 'results-data.js', 'prompt-data.js'):
+    for name in ('styles.css', 'app.js', 'results-data.js', 'prompt-data.js', 'case-data.js', 'cases.js'):
         data = (ROOT / 'site' / name).read_bytes()
         source = Path(name)
         versioned = source.stem + '.' + hashlib.sha256(data).hexdigest()[:12] + source.suffix

@@ -17,7 +17,7 @@
   <header class="paper-header">
     <h1>Confidence-Guided Selective LLM Re-Evaluation<br class="title-break"> <span>for Emotion Classification in Social Media</span></h1>
     <p class="authors">Woojin Park<sup>*</sup> &nbsp; Sangyun Kang<sup>*</sup></p>
-    <p class="affiliation">Korea University</p>
+    <p class="affiliation"><a href="https://www.korea.ac.kr/en/index.do"><img src="assets/korea-university.png" width="327" height="108" alt="Korea University"></a></p>
     <p class="author-note">* Equal contribution</p>
     <nav class="resources" aria-label="Research materials">
       <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">Code</a>
@@ -31,7 +31,7 @@
       <a href="assets/architecture.webp" target="_blank" rel="noopener" aria-label="Open the full architecture figure"><img src="assets/architecture.webp" width="2800" height="1059" fetchpriority="high" alt="Full architecture: Reddit preprocessing and data splits, DistilBERT training and calibration, confidence-based routing, LLM re-evaluation, final label selection, and statistical audit."></a>
       <figcaption><strong>Overview of the framework.</strong> Calibrated DistilBERT predictions at or above the confidence threshold retain their labels; the remaining posts are re-evaluated by an LLM. Corrections and newly introduced errors are measured separately. The main Reddit and Mixed Emotion evaluations also informed prompt development; the additional 9,000-post evaluation used a frozen protocol.</figcaption>
     </figure>
-    <nav class="section-links" aria-label="Page sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#results">Results</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
+    <nav class="section-links" aria-label="Page sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#algorithm">Algorithm</a><a href="#case-study">Case walkthrough</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#results">Results</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
     <section class="prose" id="abstract">
       <h2>Abstract</h2>
       <p>Large language models can reconsider uncertain classifications, but re-evaluating every input increases generation workload and can introduce new errors. We study confidence-guided selective re-evaluation for three-class emotion classification in social media. A temperature-scaled DistilBERT classifier retains high-confidence predictions and routes the remaining posts to Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.</p>
@@ -67,6 +67,49 @@
         </table>
       </div>
       <p class="prose">The protocols differ in label visibility, call structure, and generation budget; the comparison is between complete configurations rather than an isolated test of reasoning components. If the final label cannot be parsed, the Phase 1 prediction is retained.</p>
+    </section>
+    <section class="prose algorithm" id="algorithm">
+      <h2>From a post to a final label</h2>
+      <p class="algorithm-preparation"><strong>Before inference.</strong> Fit temperature and select the threshold on calibration data. For SELF-DISCOVER, run SELECT &rarr; ADAPT &rarr; IMPLEMENT on the task policy and reasoning modules, then save one plan per model. No evaluation post or reference label enters plan construction.</p>
+      <ol class="algorithm-flow">
+        <li><strong>Classify the post</strong><p>DistilBERT produces class scores. Apply the fitted temperature to obtain calibrated probabilities.</p><div class="formula">q = softmax(z / T), &nbsp; T = 1.480195<br>y<sub>1</sub> = arg max q, &nbsp; c = max q</div></li>
+        <li><strong>Route by confidence</strong><div class="routing-branches"><div><span class="branch-condition">c &ge; 0.70</span><p>Keep y<sub>1</sub>.<br>No LLM call.</p></div><div><span class="branch-condition">c &lt; 0.70</span><p>Send the original post to Phase 2.<br>For SELF-DISCOVER, withhold y<sub>1</sub>.</p></div></div></li>
+        <li><strong>Re-evaluate the routed post</strong><p>Llama 3 receives the shared policy, saved plan, original post, and researcher-authored evidence and alternative-interpretation checks. It generates a fresh response for this post.</p></li>
+        <li><strong>Return one label</strong><p>Use the parsed terminal label. If no permitted label can be parsed, retain y<sub>1</sub>. The reference target is used only to evaluate the outcome.</p></li>
+      </ol>
+      <details><summary>Compact inference pseudocode</summary><pre class="algorithm-code"><code>plan = load_saved_plan(model)          # reused across posts
+for post in posts:
+    q = softmax(phase1(preprocess(post)) / T)
+    y1, confidence = argmax(q), max(q)
+    if confidence &gt;= 0.70:
+        yield y1
+        continue
+    response = llm(policy, plan, original(post), checks)
+    label = parse_terminal_label(response)
+    yield label if label is valid else y1</code></pre><p class="stage-note">Schematic SELF-DISCOVER inference; exact preprocessing, input limits, prompts, and parsing rules are in the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/notebooks/colab/08_self_discover_v6c_final.ipynb">released notebook</a>.</p></details>
+    </section>
+    <section class="prose case-study" id="case-study">
+      <h2>A post through the pipeline</h2>
+      <p>Recorded Llama 3 SELF-DISCOVER outcomes on the synthetic Mixed Emotion set. These are saved experiment records, not live inference or patient histories.</p>
+      <div class="case-toolbar"><label for="case-select">Case</label><select id="case-select" disabled><option>Correction</option></select><span id="case-id">MEV2_DEP_046</span></div>
+      <article id="case-content">
+        <h3>01 &nbsp; Input post</h3>
+        <blockquote id="case-post">During recovering after a difficult week, I noticed a small success that I had been waiting for, and I kept track of dates, forms, and reminders. Even with those ordinary or positive moments, there was the thought that I was falling behind everyone else. I kept thinking about whether the moment was a turning point or just a pause, especially while making tea. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.</blockquote>
+        <div class="case-decisions">
+          <div><h3>02 &nbsp; Phase 1</h3><strong id="case-phase1">Happy</strong><p id="case-confidence">68.82% calibrated confidence</p></div>
+          <div><h3>03 &nbsp; Routing</h3><strong id="case-routing">Re-evaluate</strong><p id="case-route-note">68.82% &lt; 70% threshold</p></div>
+          <div><h3>04 &nbsp; Final label</h3><strong id="case-final">Depression</strong><p id="case-outcome">Corrected against the reference target</p></div>
+        </div>
+        <p class="case-target">Reference target: <strong id="case-target">Depression</strong><span>Evaluation only; not supplied to the model.</span></p>
+        <div id="case-reasoning">
+          <h3>Inside the saved response</h3>
+          <p class="stage-note">Model-generated text, unedited. A correct final label does not make every intermediate claim correct.</p>
+          <div id="case-excerpt"><p>The model identifies unresolved sadness despite the brief positive event. The full recorded response is available in the source records below.</p></div>
+          <details id="case-full"><summary>Full recorded model response</summary><div id="case-report" class="case-report"></div></details>
+        </div>
+        <p id="case-interpretation" class="case-interpretation">The label changes from Happy to Depression. This is one of 28 corrections in the 300-example set; one new error gives 27 net corrections.</p>
+      </article>
+      <p class="stage-note">Examples were selected to show a correction, an introduced error, a parsing fallback, and an accepted error. They are not a representative sample. <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/data/mixed_emotion/site_case_records.json">Records and selection provenance</a>.</p>
     </section>
     <section class="prompt-reader" id="prompt-reader">
       <h2>Prompts and saved plans</h2>
@@ -179,6 +222,8 @@ python3 -m unittest discover -s tests -v</code></pre>
   <footer>Research project materials &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">GitHub</a></footer>
   <script src="results-data.js"></script>
   <script src="prompt-data.js"></script>
+  <script src="case-data.js"></script>
+  <script src="cases.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

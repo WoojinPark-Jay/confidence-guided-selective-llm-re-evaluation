@@ -1,0 +1,58 @@
+{
+  "source_filename": "llama3_self_discover_mixed_emotion_sd_v6c_compact_results.csv",
+  "source_sha256": "77fdf9430614fb48d0af4f47aee108944b64bc4736925d8923ccb4747e98cb15",
+  "model": "NousResearch/Meta-Llama-3-8B-Instruct",
+  "model_revision": "53346005fb0ef11d3b6a83b12c895cca40156b6c",
+  "prompt_version": "sd-v6c-compact-plan-max-3-steps",
+  "selection": "First correction in source order, the sole introduced error, the sole parsing fallback, and the first dataset row (an accepted error). Qualitative examples, not a representative sample.",
+  "cases": [
+    {
+      "example_id": "MEV2_DEP_046",
+      "outcome": "Correction",
+      "text": "During recovering after a difficult week, I noticed a small success that I had been waiting for, and I kept track of dates, forms, and reminders. Even with those ordinary or positive moments, there was the thought that I was falling behind everyone else. I kept thinking about whether the moment was a turning point or just a pause, especially while making tea. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.",
+      "target_label": "Depression",
+      "phase1_label": "Happy",
+      "confidence": 0.68820894,
+      "routed": true,
+      "final_label": "Depression",
+      "parsed_label": "Depression",
+      "response": "Here's the annotation of the social-media post:\n\n**Emotion Extraction**\n\nThe writer's explicit emotional expressions are \"sadness\" and \"heavier sadness.\" They also mention feeling \"falling behind\" and having a sense of uncertainty (\"whether the moment was a turning point or just a pause\"). The writer's emotional state is their own, as they describe their current feelings.\n\n**Emotional Arc and Essence**\n\nThe emotional trajectory of the post is one of mixed emotions, with a dominant sense of sadness and uncertainty. The writer starts by mentioning a small success, but this is quickly overshadowed by feelings of inadequacy and self-doubt. The emotional essence is one of unresolved sadness and emotional distress.\n\n**Contextual Clarification and Purpose Identification**\n\nThe writer is reflecting on a recent experience, which suggests that the emotional state described is their current emotional state. The purpose of the post appears to be a form of catharsis, as the writer is processing their emotions and trying to make sense of their experience.\n\n**Label Prioritization**\n\nBased on the evidence, I would prioritize the labels in the following order:\n\n1. Depression (strongest supporting quote: \"By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.\")\n2. Neutral (strongest supporting quote: \"I noticed a small success that I had been waiting for\")\n3. Happy (strongest supporting quote: \"I kept track of dates, forms, and reminders\")\n\nThe post contains elements of sadness, uncertainty, and emotional distress, which suggest a stronger connection to Depression. The Neutral label is supported by the writer's mention of a small success, but this is overshadowed by the dominant emotional tone. The Happy label is not strongly supported, as the post does not convey a sense of resolution or fulfillment.\n\n**Counterfactual Check**\n\nIf the post contained a sense of resolution or closure, such as the writer finding a way to overcome their feelings of inadequacy, the Happy label might be a more plausible choice. However, the post does not contain this kind of language.\n\n**Final Label**\n\nFinal label: Depression"
+    },
+    {
+      "example_id": "MEV2_HAP_003",
+      "outcome": "Introduced error",
+      "text": "The start of spending time with my family was difficult because of a dull exhaustion that made everything seem harder. Later, there was warm support from people around me, which made the earlier heaviness feel less controlling. Even though ordinary tasks still needed to be finished, I noticed that the same event could feel supportive and stressful at once, especially after a short conversation. The day did not become perfect, but it ended with enough warmth and relief to shape the final feeling.",
+      "target_label": "Happy",
+      "phase1_label": "Happy",
+      "confidence": 0.673157,
+      "routed": true,
+      "final_label": "Neutral",
+      "parsed_label": "Neutral",
+      "response": "Here's the annotation of the social-media post:\n\n**Emotion Extraction**\n\nThe writer's explicit emotional expressions are \"dull exhaustion,\" \"heaviness,\" and \"warm support.\" The writer attributes no emotions to others or quotes, and the post does not describe a hypothetical situation.\n\n**Emotional Arc and Essence**\n\nThe emotional trajectory of the post is from a state of \"dull exhaustion\" to a state of \"warm support.\" The writer's emotional essence is a mix of negative and positive emotions, with the negative emotions being more prominent initially and the positive emotions becoming more dominant towards the end.\n\n**Contextual Clarification and Purpose Identification**\n\nThe post describes a past event, as indicated by the writer's use of the phrase \"the start of spending time with my family.\" The primary purpose of the post is to reflect on the writer's emotional experience during this event.\n\n**Label Prioritization**\n\nBased on the evidence, I rank the candidate labels in order of likelihood as follows:\n\n1. Neutral (most likely)\n\t* The post describes a past event, and the writer's emotional expression is mixed, with both negative and positive emotions present. The post does not convey a sense of unresolved sadness, hopelessness, or emotional distress.\n2. Happy (second-best)\n\t* The post ends on a positive note, with the writer describing the event as having \"enough warmth and relief\" and a \"final feeling\" that is not explicitly negative.\n3. Depression (least likely)\n\t* While the post describes a state of \"dull exhaustion\" and \"heaviness,\" the writer's emotional expression is not characterized by a sense of hopelessness or emotional distress. The post does not convey a sense of unresolved sadness or emotional exhaustion.\n\n**Counterfactual Check**\n\nIf the post were to contain a description of the writer's ongoing emotional distress or unresolved sadness, it would likely shift the label to Depression. However, the post does not convey this sense of distress.\n\n**Final Label**\n\nFinal label: Neutral"
+    },
+    {
+      "example_id": "MEV2_NEU_004",
+      "outcome": "Parsing fallback",
+      "text": "A friend sent two possible times for a group call, but the time zones were not written in the same way. I converted both times, placed them in a small table, and asked the group to confirm the version they meant. The description remains practical and informational.",
+      "target_label": "Neutral",
+      "phase1_label": "Neutral",
+      "confidence": 0.50115645,
+      "routed": true,
+      "final_label": "Neutral",
+      "parsed_label": "",
+      "response": "Let's work through the reasoning structure on this post.\n\n**Step 1: Emotion Extraction**\n\nThe writer's explicit emotional expressions are not explicitly stated. However, we can infer that the writer is not expressing any distress or negative emotions, as the tone is described as \"practical and informational.\"\n\n**Step 2: Emotional Arc and Essence**\n\nThe emotional arc of the post is neutral, as the writer is simply describing a situation and providing a solution. The emotional essence is also neutral, as the writer is not expressing any emotions themselves, but rather describing a factual situation.\n\n**Step 3: Contextual Clarification and Purpose Identification**\n\nThe post is describing a past situation, as the writer mentions \"a friend sent two possible times\" and \"I converted both times.\" The writer is not expressing any emotions about the past, but rather describing a factual situation. The primary purpose of the post is to provide information about how the writer handled the situation.\n\n**Final Step: Label Prioritization**\n\nBased on the evidence, I would prioritize the labels as follows:\n\n* Depression: No strong supporting quotes, but no quotes that contradict this label either.\n* Neutral: The post is factual, informational, and neutral in tone, with no emotional distress or negative emotions expressed.\n* Happy: The post is neutral, but the writer's actions (converting the times and providing a solution) could be seen as a positive and practical outcome.\n\nSecond-best label: Neutral\n\nThe post would need to contain emotional distress or negative emotions to be labeled as Depression. If the post described the writer's emotional state as distressed or negative, it would be labeled as Depression."
+    },
+    {
+      "example_id": "MEV2_DEP_001",
+      "outcome": "Not routed",
+      "text": "During a school day, I noticed a kind message from a friend, and ordinary tasks still needed to be finished. Even with those ordinary or positive moments, there was a heavy sadness returning in the background. I kept rereading the same message without knowing how to answer, especially before breakfast. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.",
+      "target_label": "Depression",
+      "phase1_label": "Happy",
+      "confidence": 0.7959446,
+      "routed": false,
+      "final_label": "Happy",
+      "parsed_label": null,
+      "response": null
+    }
+  ]
+}
