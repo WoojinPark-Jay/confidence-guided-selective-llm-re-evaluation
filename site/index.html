@@ -44,7 +44,7 @@
       <div class="primary-finding"><span class="finding-label">MAIN FINDING</span><p>On the fixed-protocol 9,000-post evaluation, Llama 3 SELF-DISCOVER re-evaluates <strong>111 posts (1.23%)</strong> and yields <strong>17 net corrections</strong>: 30 corrected errors minus 13 introduced errors.</p><a href="#results">Full results and statistical comparisons &rarr;</a></div>
     </section>
     <section class="prose" id="abstract"><details class="abstract-disclosure"><summary>Abstract</summary>
-      
+
       <p>Large language models can reconsider uncertain classifications, but re-evaluating every input increases generation workload and can introduce new errors. We study confidence-guided selective re-evaluation for three-class emotion classification in social media. A temperature-scaled DistilBERT classifier retains high-confidence predictions and routes the remaining posts to Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.</p>
       <p>On the exploratory 12,000-post Reddit evaluation, Llama 3 SELF-DISCOVER improves accuracy from 96.92% to 97.20% while re-evaluating 1.82% of posts. On a separate, fixed-protocol evaluation of 9,000 posts, it produces 17 net corrections while routing 1.23%, with a significant improvement over Phase 1 under the specified Holm adjustment. SELF-DISCOVER has the highest observed accuracy across the evaluated sets, but its differences from Direct and CoT are not statistically resolved on Reddit. The results describe a proxy-label classification task, not clinical diagnosis.</p>
     </details></section>
