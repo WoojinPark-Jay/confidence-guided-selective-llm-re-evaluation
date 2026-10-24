@@ -112,12 +112,17 @@ class SiteExportTests(unittest.TestCase):
         self.assertNotEqual(exported['cases'][1]['final_label'], exported['cases'][1]['target_label'])
         self.assertEqual(exported['cases'][2]['parsed_label'], '')
 
-    def test_finding_links_have_distinct_evidence_targets(self):
+    def test_findings_open_distinct_inline_evidence(self):
         html = (ROOT / 'site/index.html').read_text()
-        for target, label in [('routing-analysis', 'Routing analysis'),
-                              ('paired-comparisons', 'Paired comparisons'),
-                              ('generation-workload', 'Generation workload')]:
-            self.assertIn(f'href="#{target}">{label} &rarr;</a>', html)
+        findings = html.split('<ol class="finding-list">')[1].split('</ol>')[0]
+        self.assertEqual(findings.count('<details class="finding-evidence">'), 3)
+        self.assertNotIn('href="#', findings)
+        for title in ('View routing evidence', 'View paired comparisons', 'View generation workload'):
+            self.assertEqual(findings.count(f'<summary>{title}</summary>'), 1)
+        self.assertIn('src="assets/routing.webp"', findings)
+        self.assertIn('0.0412', findings)
+        self.assertIn('54.9 s', findings)
+        for target in ('routing-analysis', 'paired-comparisons', 'generation-workload'):
             self.assertEqual(html.count(f'id="{target}"'), 1)
 
     def test_prompt_text_matches_public_files(self):
