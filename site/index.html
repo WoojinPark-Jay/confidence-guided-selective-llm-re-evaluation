@@ -48,6 +48,7 @@
           <a href="#overview">Overview</a>
           <a href="#results">Results</a>
           <a href="#routing">Routing</a>
+          <a href="#methods">Methods</a>
           <a href="#evidence">Evidence</a>
           <a href="#reproduce">Reproduce</a>
           <a class="nav-repo" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">Repository</a>
@@ -59,12 +60,12 @@
       <section id="top" class="hero section-band">
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">Research project · Reproducibility package</p>
+            <p class="eyebrow">Social media NLP · Selective prediction</p>
             <h1>Confidence-Guided Selective LLM Re-Evaluation</h1>
             <p class="hero-subtitle">for Emotion Classification in Social Media</p>
             <p class="hero-deck">
               A calibrated DistilBERT classifier keeps high-confidence predictions and sends only uncertain cases to an
-              open-weight LLM for a second look.
+              open-weight large language model (LLM) for re-evaluation.
             </p>
             <p class="authors"><strong>Woojin Park</strong><span aria-hidden="true"> · </span><strong>Sangyun Kang</strong></p>
             <p class="author-note">Lead authors · equal contribution</p>
@@ -75,27 +76,27 @@
             </div>
           </div>
 
-          <aside class="hero-summary" aria-label="Study summary">
-            <p class="summary-kicker">At a glance</p>
+          <aside class="hero-summary" aria-label="Fixed-protocol evaluation results">
+            <p class="summary-kicker">Fixed-protocol evaluation · 9,000 additional Reddit posts</p>
             <dl>
               <div>
-                <dt>Phase 1</dt>
-                <dd>Calibrated DistilBERT</dd>
+                <dt>Accuracy</dt>
+                <dd>97.58% → 97.77%</dd>
               </div>
               <div>
-                <dt>Route rule</dt>
-                <dd>Confidence below 0.70</dd>
+                <dt>LLM use</dt>
+                <dd>111 posts · 1.23%</dd>
               </div>
               <div>
-                <dt>Phase 2</dt>
-                <dd>Llama 2 / Llama 3</dd>
+                <dt>Net corrections</dt>
+                <dd>30 corrected − 13 introduced = +17</dd>
               </div>
               <div>
-                <dt>Final protocol</dt>
-                <dd>Task-adapted SELF-DISCOVER</dd>
+                <dt>Configuration</dt>
+                <dd>DistilBERT + Llama 3 SELF-DISCOVER</dd>
               </div>
             </dl>
-            <p class="scope-note">Proxy emotion labels only. No clinical diagnosis, screening, or treatment use.</p>
+            <p class="scope-note">Three-class proxy emotion task · Research manuscript</p>
           </aside>
         </div>
 
@@ -132,18 +133,19 @@
         <div class="shell split-intro">
           <div>
             <p class="section-index">01 · Overview</p>
-            <h2>Spend LLM inference where the classifier is least certain.</h2>
+            <h2>Selective re-evaluation, measured one correction at a time.</h2>
           </div>
           <div class="prose lead-prose">
             <p>
-              Applying an LLM to every post is expensive and can replace correct predictions with incorrect ones. This
-              study tests a selective alternative: calibrate a compact classifier, retain its confident decisions, and
-              invoke an LLM only for low-confidence cases.
+              This study evaluates a two-stage classifier for subreddit-derived proxy emotion labels. Temperature-scaled
+              DistilBERT predictions with confidence at least 0.70 are retained; the remaining posts are re-evaluated by
+              Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.
             </p>
             <p>
-              The evaluation separates two questions that are often conflated. First, does confidence routing concentrate
-              Phase 1 errors? Second, once an error reaches Phase 2, does the LLM correct more labels than it damages?
-              Reporting both makes the source of each end-to-end gain auditable.
+              Evaluation separates error concentration by the router from net corrections by the LLM. The main Reddit
+              and synthetic Mixed Emotion sets informed prompt development. A separate 9,000-post evaluation used the
+              frozen configuration and found a gain over Phase 1 under the specified Holm adjustment. SELF-DISCOVER had
+              the highest observed accuracy, while its differences from Direct and CoT remained unresolved on Reddit.
             </p>
           </div>
         </div>
@@ -176,10 +178,10 @@
         <div class="shell section-heading">
           <div>
             <p class="section-index">02 · Results</p>
-            <h2>Small routing budgets, measurable net corrections.</h2>
+            <h2>Where the gains come from.</h2>
           </div>
           <p class="section-summary">
-            Select a dataset to see the final Llama 3 SELF-DISCOVER result. Main Reddit and Mixed Emotion comparisons are
+            Llama 3 SELF-DISCOVER results across three evaluation sets. Main Reddit and Mixed Emotion comparisons are
             exploratory; the additional 9,000-post run used the frozen protocol.
           </p>
         </div>
@@ -242,6 +244,18 @@
             </div>
           </div>
         </div>
+
+        <details class="shell all-results">
+          <summary>All 15 evaluated configurations</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Complete results table">
+            <table class="comparison-table">
+              <caption>Full-set metrics. Bold marks the highest accuracy and macro F1 within each dataset–model group; it does not indicate significance.</caption>
+              <thead><tr><th scope="col">Dataset</th><th scope="col">Model</th><th scope="col">Protocol</th><th scope="col">Accuracy (%)</th><th scope="col">Macro F1 (%)</th><th scope="col">Corrected</th><th scope="col">Introduced</th><th scope="col">Net</th></tr></thead>
+              <tbody id="all-results-body"></tbody>
+            </table>
+          </div>
+          <p class="source-line"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_metrics.json">Row-aligned metric results</a> · <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_statistics.json">Paired tests and Holm families</a></p>
+        </details>
 
         <figure class="shell wide-figure">
           <button class="figure-button" type="button" data-expand="assets/corrections.webp" aria-label="Open the corrections and introduced errors figure at full size">
@@ -320,8 +334,9 @@
         <div class="shell boundary-note">
           <p><strong>Why “non-binding”?</strong></p>
           <p>
-            The first candidate, 0.70, already had a 2.162% upper bound, below the 5% budget. The risk criterion therefore
-            excluded no lower-grid candidate; the prespecified grid boundary determined the selected operating point.
+            The lowest tested threshold, 0.70, already satisfied the risk criterion, so the grid boundary determined the
+            selected operating point. The same calibration partition fitted temperature and selected the threshold;
+            pointwise bounds do not provide a simultaneous post-selection or out-of-distribution risk guarantee.
           </p>
         </div>
       </section>
@@ -337,6 +352,14 @@
             visibility, and generation workload.
           </p>
         </div>
+
+        <figure class="shell method-figure">
+          <a class="figure-button" href="assets/plan-construction.webp" data-expand="assets/plan-construction.webp" aria-label="Enlarge plan construction and execution diagram">
+            <img src="assets/plan-construction.webp" alt="Task-level SELECT, ADAPT, and IMPLEMENT construct a saved plan without evaluation posts; each routed post then receives fresh execution." loading="lazy">
+          </a>
+          <figcaption><strong>Build the procedure once; execute it for each routed post.</strong> Plan construction receives the class policy and 18 researcher-authored modules, without evaluation examples or reference labels. Each model retains its own unedited plan. Evidence-ledger and counterfactual checks are researcher-authored execution instructions.</figcaption>
+          <p class="source-line"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Exact prompts</a> · <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/plans">Saved model-specific plans</a></p>
+        </figure>
 
         <div class="shell protocol-table-wrap">
           <table class="protocol-table">
@@ -359,7 +382,7 @@
                 <th scope="row">Chain-of-thought</th>
                 <td>Policy and original text in a staged dialogue</td>
                 <td>Five generation calls</td>
-                <td>Visible at final decision</td>
+                <td>Visible from comparison turn</td>
               </tr>
               <tr class="protocol-highlight">
                 <th scope="row">SELF-DISCOVER</th>
@@ -387,7 +410,7 @@
             <strong>2,568.5 s</strong>
             <span>111 calls · 47,884 generated tokens</span>
           </div>
-          <p class="workload-scope">Additional 9,000-post run; measured model-generation time only, not end-to-end latency or cost.</p>
+          <p class="workload-scope">Additional 9,000-post run on NVIDIA L4; model-generation time only. Direct yielded +13 net corrections versus +17 for SELF-DISCOVER, at about 2.1% of its recorded generation time. <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/additional9000_generation_workload.csv">Workload measurements</a></p>
         </div>
       </section>
 
@@ -430,8 +453,9 @@
             <p>
               Two researchers uninvolved in data generation or prompt development labeled every example independently and
               without seeing targets, metadata, model outputs, or each other’s responses. No adjudication or relabeling was
-              performed.
+              performed. A third researcher checked completeness, alignment, and statistics.
             </p>
+            <p class="source-line"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/data/mixed_emotion/mixed_emotion_annotation_audit.csv">Anonymized audit labels</a> · <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/mixed_emotion_annotation_audit.json">Audit statistics</a></p>
           </article>
         </div>
 
@@ -549,12 +573,7 @@ python3 -m unittest discover -s tests -v</code></pre>
             <h3>Bibliographic record pending</h3>
             <p>The final citation and archival DOI will be added after the complete author list and release record are approved.</p>
           </div>
-          <pre><code>@article{park_confidence_guided,
-  title  = {Confidence-Guided Selective LLM Re-Evaluation
-            for Emotion Classification in Social Media},
-  author = {Park, Woojin and Kang, Sangyun and others},
-  note   = {Manuscript; bibliographic record pending}
-}</code></pre>
+          <div class="release-status"><h3>Public materials available now</h3><p>Code, exact prompts, synthetic data, text-free predictions, and aggregate reports are available in the repository. The manuscript PDF and final bibliographic record are not published on this page.</p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">Browse the research artifact →</a></div>
         </div>
       </section>
     </main>
@@ -568,9 +587,11 @@ python3 -m unittest discover -s tests -v</code></pre>
 
     <dialog class="figure-dialog" aria-label="Expanded research figure">
       <button type="button" class="dialog-close" aria-label="Close expanded figure">Close</button>
+      <a class="figure-original" href="assets/calibration.webp" target="_blank" rel="noopener">Open original figure</a>
       <img src="" alt="">
     </dialog>
 
+    <script src="results-data.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

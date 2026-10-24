@@ -131,9 +131,11 @@ const dialog = document.querySelector('.figure-dialog');
 if (dialog && typeof dialog.showModal === 'function') {
   const dialogImage = dialog.querySelector('img');
   document.querySelectorAll('[data-expand]').forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
       const sourceImage = button.querySelector('img');
       dialogImage.src = button.dataset.expand;
+      dialog.querySelector('.figure-original').href = button.dataset.expand;
       dialogImage.alt = sourceImage.alt;
       dialog.showModal();
     });
@@ -141,7 +143,32 @@ if (dialog && typeof dialog.showModal === 'function') {
 
   dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (event) => {
-    if (event.target === dialog) dialog.close();
+    const bounds = dialog.getBoundingClientRect();
+    if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+  });
+}
+
+const resultsBody = document.getElementById('all-results-body');
+if (resultsBody && window.studyResults) {
+  const order = ['Reddit', 'Mixed Emotion', 'Additional Reddit 9000'];
+  const methods = ['Direct', 'CoT', 'SELF-DISCOVER'];
+  const rows = [...window.studyResults].sort((a, b) =>
+    order.indexOf(a.dataset) - order.indexOf(b.dataset) || a.model.localeCompare(b.model) || methods.indexOf(a.method) - methods.indexOf(b.method));
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+    const group = rows.filter(other => other.dataset === row.dataset && other.model === row.model);
+    const values = [row.dataset.replace('9000', '9,000'), row.model, row.method,
+      row.accuracy_percent.toFixed(2), row.macro_f1_percent.toFixed(2), row.corrected, row.introduced,
+      (row.net_corrections > 0 ? '+' : '') + row.net_corrections];
+    values.forEach((value, index) => {
+      const td = document.createElement('td');
+      const metric = index === 3 ? 'accuracy_percent' : index === 4 ? 'macro_f1_percent' : null;
+      if (metric && row[metric] === Math.max(...group.map(item => item[metric]))) {
+        const strong = document.createElement('strong'); strong.textContent = value; td.append(strong);
+      } else td.textContent = value;
+      tr.append(td);
+    });
+    resultsBody.append(tr);
   });
 }
 
