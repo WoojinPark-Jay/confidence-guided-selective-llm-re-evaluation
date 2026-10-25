@@ -8,7 +8,6 @@ The October 24 repair also aligns the prompt reader and outcome explorer to the 
 
 - Source: `site/`
 - Deployment: `.github/workflows/pages.yml`
-- Public URL: <https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/>
 
 The page uses public results, synthetic examples, verified synthetic model responses, and manuscript figures. It does not publish the manuscript PDF, LaTeX source, raw Reddit text, private identifiers, or model weights.
 
