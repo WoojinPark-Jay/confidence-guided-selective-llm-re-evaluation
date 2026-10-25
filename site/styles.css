@@ -212,11 +212,11 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
 
 /* Primary evidence precedes implementation details. */
 .contributions,.findings { max-width: 1032px; margin: 48px auto; }
-.contribution-list { margin: 24px 0 30px; border-top: 2px solid #333; }
-.contribution-list > div { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0,1.35fr); gap: 32px; padding: 18px 0; border-bottom: 1px solid #ddd; }
+.contribution-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 32px; margin: 20px 0 16px; border-top: 1px solid #aaa; }
+.contribution-list > div { padding: 18px 0; border-bottom: 1px solid #ddd; }
 .contribution-list dt { font-size: 18px; font-weight: bold; line-height: 1.5; }
 .contribution-list dt span { display: inline-block; font-size: 13px; font-weight: normal; color: #7b263b; margin-right: 12px; }
-.contribution-list dd { margin: 0; font-size: 17px; line-height: 1.6; color: #444; }
+.contribution-list dd { margin: 7px 0 0; font-size: 16px; line-height: 1.5; color: #444; }
 .research-question { max-width: 820px; margin: 6px auto 18px; text-align: center; font-size: 20px; line-height: 1.45; }
 .evidence-overview { padding: 18px 0 16px; border-block: 1px solid #aaa; margin: 24px 0; }
 .evidence-context { font: 13px/1.5 Arial,sans-serif; color: #555; margin: 0 0 14px; }
@@ -226,9 +226,6 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
 .evidence-metrics dd { margin: 4px 0 0; font-size: 29px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .evidence-metrics dd span { display: block; font-size: 14px; font-weight: normal; color: #555; margin-top: 6px; line-height: 1.4; }
 .evidence-scope,.evaluation-scope { font-size: 14px; line-height: 1.55; color: #555; margin: 16px 0 0; }
-.contribution-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 32px; margin: 20px 0 16px; border-top: 1px solid #aaa; }
-.contribution-list > div { display: block; }
-.contribution-list dd { margin-top: 7px; font-size: 16px; line-height: 1.5; }
 @media(max-width: 600px) {
   .research-question { font-size: 18px; text-align: left; }
   .evidence-metrics { grid-template-columns: 1fr; gap: 12px; }
@@ -277,22 +274,6 @@ footer { max-width: 820px; border-top: 1px solid #e2e2e2; padding: 22px 0 35px; 
 .tutorial-cta { display: inline-flex; align-items: center; justify-content: center; padding: 3px 10px; border: 1px solid #b8a4aa; border-radius: 0; background: transparent; color: #7b263b; font-size: 15px; font-weight: 600; text-decoration: none; line-height: 1.4; }
 .tutorial-cta:hover { border-color: #7b263b; color: #7b263b; text-decoration: underline; text-underline-offset: 3px; }
 .tutorial-cta:focus-visible { outline: 2px solid #7b263b; outline-offset: 3px; }
-body:not(.tutorial-page) { font-size: 17px; }
-body:not(.tutorial-page) section { margin-top: 32px; margin-bottom: 32px; }
-body:not(.tutorial-page) .paper-header { padding-top: 30px; padding-bottom: 16px; }
-body:not(.tutorial-page) h1 { font-size: 34px; margin-bottom: 18px; }
-body:not(.tutorial-page) .section-heading h2 { font-size: 25px; }
-body:not(.tutorial-page) .section-heading { margin-bottom: 16px; }
-body:not(.tutorial-page) .method-plan { max-width: 760px; }
-body:not(.tutorial-page) .original-algorithm { max-width: 720px; }
-body:not(.tutorial-page) .contribution-list > div { padding-block: 14px; }
-body:not(.tutorial-page) .primary-finding p { font-size: 19px; }
-body:not(.tutorial-page) .case-decisions strong { font-size: 24px; }
-@media(max-width: 760px) {
-  body:not(.tutorial-page) h1 { font-size: 27px; }
-  body:not(.tutorial-page) .section-heading h2 { font-size: 23px; }
-  body:not(.tutorial-page) .case-decisions strong { font-size: 21px; }
-}
 .finding-target { scroll-margin-top: 24px; }
 .baseline-comparison { padding: 18px 0; border-block: 1px solid #ccc; margin: 24px 0; }
 .baseline-comparison select { max-width: 100%; margin: 6px 0 6px 10px; }
@@ -307,3 +288,100 @@ body:not(.tutorial-page) .case-decisions strong { font-size: 24px; }
 .confusion-table td { border: 2px solid white; }
 @media (max-width: 760px) { .matrix-pair { grid-template-columns: 1fr; gap: 16px; } }
 .finding-target:target { outline: 1px solid #9aaab6; outline-offset: 8px; }
+
+/* Project-page rhythm stays independent of the interactive tutorial. */
+body:not(.tutorial-page) { --reading-width: 760px; --evidence-width: 960px; font-size: 17px; line-height: 1.6; }
+body:not(.tutorial-page) main { max-width: 1008px; }
+body:not(.tutorial-page) .paper-header { max-width: 1008px; padding: 32px 24px 18px; }
+body:not(.tutorial-page) h1 { max-width: 960px; font-size: 34px; line-height: 1.18; margin-bottom: 18px; text-wrap: balance; }
+body:not(.tutorial-page) h1 span { font-weight: normal; }
+body:not(.tutorial-page) .resources { gap: 8px 24px; margin-top: 16px; }
+body:not(.tutorial-page) .resources a { padding-block: 5px; }
+body:not(.tutorial-page) .resources .tutorial-cta { padding: 4px 12px; }
+body:not(.tutorial-page) :is(.prose, .prompt-reader, .result-explorer, .supporting-figure, .protocol-details, .method-plan, .research-question) { max-width: var(--reading-width); }
+body:not(.tutorial-page) :is(.paper-algorithms, .case-study, .contributions, .findings) { max-width: var(--evidence-width); }
+body:not(.tutorial-page) section { margin-block: 32px; }
+body:not(.tutorial-page) :is(.paper-algorithms, .case-study, .findings) { padding-top: 22px; }
+body:not(.tutorial-page) .section-links { margin: 24px 0; padding: 10px 0; gap: 6px 22px; }
+body:not(.tutorial-page) .section-heading { margin-bottom: 16px; }
+body:not(.tutorial-page) .section-number { font-family: inherit; font-size: 12px; margin-bottom: 5px; }
+body:not(.tutorial-page) h2 { font-size: 25px; margin-bottom: 18px; }
+body:not(.tutorial-page) .section-heading h2 { font-size: 25px; margin: 0; text-wrap: balance; }
+body:not(.tutorial-page) h3 { margin-top: 24px; }
+body:not(.tutorial-page) .section-intro { max-width: var(--reading-width); }
+body:not(.tutorial-page) p { margin-bottom: 14px; }
+body:not(.tutorial-page) .research-question { font-size: 19px; margin-block: 4px 16px; }
+body:not(.tutorial-page) .teaser { margin-block: 12px 24px; }
+body:not(.tutorial-page) figcaption { max-width: var(--reading-width); line-height: 1.5; margin-top: 10px; }
+body:not(.tutorial-page) .original-algorithm { max-width: 720px; }
+body:not(.tutorial-page) :is(.algorithm-image-scroll, .table-wrap) { overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: #aaa #fff; }
+body:not(.tutorial-page) :is(pre, .algorithm-image-scroll):focus-visible { outline: 2px solid #7b263b; outline-offset: 3px; }
+body:not(.tutorial-page) .table-wrap { margin-block: 20px; }
+body:not(.tutorial-page) table { font-size: 15px; line-height: 1.45; }
+body:not(.tutorial-page) :is(th, td) { padding: 10px; }
+body:not(.tutorial-page) caption { margin-bottom: 10px; font-size: 14px; }
+body:not(.tutorial-page) .source-links { max-width: var(--evidence-width); line-height: 1.5; }
+body:not(.tutorial-page) .routing-branches > div:last-child { border-color: #7b263b; }
+body:not(.tutorial-page) :is(.evidence-context, .finding-label, .case-decisions h3) { font-family: inherit; }
+body:not(.tutorial-page) .evidence-metrics dd { font-size: 27px; }
+body:not(.tutorial-page) .contribution-list > div { padding-block: 14px; }
+body:not(.tutorial-page) .primary-finding { padding-block: 16px; }
+body:not(.tutorial-page) .primary-finding p { font-size: 19px; max-width: var(--reading-width); }
+body:not(.tutorial-page) .finding-list > li { padding-block: 14px 16px; }
+body:not(.tutorial-page) .finding-list h3 { margin-top: 0; }
+body:not(.tutorial-page) :is(.finding-list p, .findings-scope) { max-width: var(--reading-width); }
+body:not(.tutorial-page) .case-decisions { gap: 32px; }
+body:not(.tutorial-page) .case-decisions h3 { margin-top: 0; }
+body:not(.tutorial-page) .case-decisions strong { font-size: 24px; overflow-wrap: anywhere; }
+body:not(.tutorial-page) .case-decisions > div:not(:last-child)::after { right: -21px; }
+body:not(.tutorial-page) .case-evidence-grid { gap: 28px; }
+body:not(.tutorial-page) .case-evidence { padding-left: 24px; }
+body:not(.tutorial-page) .legend { flex-wrap: wrap; gap: 6px 20px; }
+body:not(.tutorial-page) .bar, body:not(.tutorial-page) .legend span::before { background: #527364; }
+body:not(.tutorial-page) .bar.introduced, body:not(.tutorial-page) .legend span:last-child::before { background: #995566; }
+body:not(.tutorial-page) .prompt-reader pre { background: #fcfcfc; padding: 14px 16px; line-height: 1.6; }
+body:not(.tutorial-page) .finding-target:target { outline-color: #b8a4aa; }
+body:not(.tutorial-page) .confusion-table { font-size: 14px; }
+body:not(.tutorial-page) .confusion-table :is(th, td) { padding: 10px 3px; }
+body:not(.tutorial-page) .confusion-table thead th { white-space: normal; }
+body:not(.tutorial-page) footer { max-width: var(--reading-width); margin-top: 36px; padding-block: 18px 28px; }
+
+@media (max-width: 760px) {
+  body:not(.tutorial-page) .paper-header { padding: 24px 20px 16px; }
+  body:not(.tutorial-page) h1 { font-size: 27px; }
+  body:not(.tutorial-page) :is(h2, .section-heading h2) { font-size: 23px; }
+  body:not(.tutorial-page) section { margin-block: 28px; }
+  body:not(.tutorial-page) .case-decisions { gap: 16px; }
+  body:not(.tutorial-page) .case-decisions strong { font-size: 21px; }
+  body:not(.tutorial-page) .case-decisions > div:not(:last-child)::after { display: none; }
+  body:not(.tutorial-page) .case-evidence-grid { gap: 0; }
+  body:not(.tutorial-page) .case-evidence { padding-left: 0; }
+  body:not(.tutorial-page) .table-wrap > table { min-width: 620px; }
+  body:not(.tutorial-page) .table-wrap > .summary-table { min-width: 820px; }
+  body:not(.tutorial-page) .table-wrap > .comparison-table { min-width: 940px; }
+  body:not(.tutorial-page) .table-wrap > .confusion-table { min-width: 0; }
+  body:not(.tutorial-page) :is(.teaser, .method-plan, .supporting-figure, .finding-evidence) figure > a,
+  body:not(.tutorial-page) :is(.teaser, .method-plan) > a { overflow-x: auto; overscroll-behavior-x: contain; }
+  body:not(.tutorial-page) :is(.teaser, .method-plan, .supporting-figure, .finding-evidence) figure > a > img,
+  body:not(.tutorial-page) :is(.teaser, .method-plan) > a > img { min-width: 600px; }
+}
+
+@media (max-width: 480px) {
+  body:not(.tutorial-page) main { padding-inline: 16px; }
+  body:not(.tutorial-page) .paper-header { padding-inline: 16px; }
+  body:not(.tutorial-page) h1 { font-size: 25px; }
+  body:not(.tutorial-page) .resources { gap: 4px 18px; }
+  body:not(.tutorial-page) .section-links { justify-content: flex-start; gap: 5px 18px; }
+  body:not(.tutorial-page) .tabs { gap: 0 16px; }
+  body:not(.tutorial-page) .tabs button { font-size: 15px; }
+  body:not(.tutorial-page) .reader-toolbar { align-items: flex-start; }
+  body:not(.tutorial-page) .reader-toolbar select { flex: 1; min-width: 0; }
+  body:not(.tutorial-page) .reader-toolbar a { flex-basis: 100%; }
+  body:not(.tutorial-page) .outcome-row { grid-template-columns: minmax(0,1fr) 104px; gap: 6px 12px; }
+  body:not(.tutorial-page) .outcome-name { grid-column: 1 / -1; font-size: 15px; }
+  body:not(.tutorial-page) .outcome-count { font-size: 14px; }
+  body:not(.tutorial-page) .evidence-metrics dd { font-size: 24px; }
+  body:not(.tutorial-page) .supporting-figure summary span,
+  body:not(.tutorial-page) #case-full summary span { display: block; margin-left: 0; }
+  body:not(.tutorial-page) .baseline-comparison select { display: block; margin-left: 0; }
+}

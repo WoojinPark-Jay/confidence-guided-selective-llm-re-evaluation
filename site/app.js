@@ -2,6 +2,7 @@ const body = document.getElementById('all-results-body');
 const promptTabs = [...document.querySelectorAll('[data-prompt]')];
 const fileSelect = document.getElementById('prompt-file');
 let currentGroup = 'Direct';
+const promptSelections = new Map();
 const descriptions = {
   Direct: 'One user message includes the shared policy, original text, and Phase 1 prediction. No rationale is requested.',
   CoT: 'A system message precedes five generation calls: acknowledgment, text response, independent analysis, comparison, and final decision. Assistant responses remain in the conversation.',
@@ -9,6 +10,7 @@ const descriptions = {
   'Saved plans': 'Unedited model-generated task-level plans used in the experiments, not per-post answers. The Llama 2 output is preserved even where it differs from the requested compact format.'
 };
 function showPrompt() {
+  promptSelections.set(currentGroup, fileSelect.value);
   const file = window.studyPrompts[currentGroup][Number(fileSelect.value)];
   document.getElementById('prompt-text').textContent = file.text;
   document.getElementById('prompt-source').href = 'https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/' + file.path;
@@ -31,6 +33,7 @@ function choosePrompt(tab) {
   fileSelect.replaceChildren(...window.studyPrompts[currentGroup].map((file, index) => {
     const option = document.createElement('option'); option.value = index; option.textContent = file.title; return option;
   }));
+  fileSelect.value = promptSelections.get(currentGroup) || '0';
   document.getElementById('prompt-description').textContent = descriptions[currentGroup];
   showPrompt();
 }
@@ -94,24 +97,30 @@ function showMatrices() {
   document.getElementById('matrix-gain').textContent = `${errors[0]} errors → ${errors[1]} errors: ${errors[0]-errors[1]} net corrections, +${((errors[0]-errors[1])/data.n*100).toFixed(2)} percentage points. ${scope}`;
   document.getElementById('matrix-source').href = 'https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/' + data.source;
 }
-if (matrixSelect && window.studyMatrices) {
-  matrixSelect.addEventListener('change', showMatrices);
-  showMatrices();
-}
 const modelSelect = document.getElementById('result-model');
 function showOutcomes() {
   const dataset = datasetSelect.value;
-  [...modelSelect.options].find(option => option.value === 'Llama 2').disabled = dataset === 'Additional Reddit 9000';
-  if (dataset === 'Additional Reddit 9000') modelSelect.value = 'Llama 3';
+  const availableModels = new Set(window.studyResults.filter(row => row.dataset === dataset).map(row => row.model));
+  [...modelSelect.options].forEach(option => { option.disabled = !availableModels.has(option.value); });
+  if (!availableModels.has(modelSelect.value)) {
+    modelSelect.value = [...modelSelect.options].find(option => !option.disabled)?.value || '';
+  }
   const methods = ['Direct','CoT','SELF-DISCOVER'];
   const rows = window.studyResults.filter(row => row.dataset === dataset && row.model === modelSelect.value)
     .sort((a,b) => methods.indexOf(a.method)-methods.indexOf(b.method));
   const scale = Math.max(...rows.flatMap(row => [row.corrected,row.introduced]),1);
   const routed = dataset === 'Reddit' ? 218 : dataset === 'Mixed Emotion' ? 86 : 111;
-  document.getElementById('result-context').textContent =
-    (dataset === 'Additional Reddit 9000' ? 'Fixed-protocol evaluation. ' : 'Exploratory prompt-development evaluation. ') +
-    `${routed} of ${rows[0].n.toLocaleString('en-US')} posts routed; Phase 1 accuracy ${rows[0].phase1_accuracy_percent.toFixed(2)}%.`;
   const chart = document.getElementById('outcome-chart'); chart.replaceChildren();
+  if (!rows.length) {
+    document.getElementById('result-context').textContent = 'No released results are available for this dataset and Phase 2 model.';
+    return;
+  }
+  document.getElementById('result-context').textContent =
+    `Phase 2: ${modelSelect.value}. ` +
+    (dataset === 'Additional Reddit 9000' ? 'Fixed-protocol evaluation. ' : 'Exploratory prompt-development evaluation. ') +
+    `${routed} of ${rows[0].n.toLocaleString('en-US')} posts routed; Phase 1 accuracy ${rows[0].phase1_accuracy_percent.toFixed(2)}%. ` +
+    'Matrices above always show Llama 3 SELF-DISCOVER. ' +
+    (availableModels.size === 1 ? `Only ${modelSelect.value} was evaluated on this dataset.` : '');
   rows.forEach(row => {
     const item = document.createElement('div'); item.className = 'outcome-row';
     const label = document.createElement('strong'); label.className = 'outcome-name'; label.textContent = row.method;
@@ -130,11 +139,36 @@ function showOutcomes() {
     count.append(detail); item.append(label,bars,count); chart.append(item);
   });
 }
-if (window.studyResults && datasetSelect) {
-  datasetSelect.addEventListener('change',showOutcomes);
-  modelSelect.addEventListener('change',showOutcomes);
-  showOutcomes();
+function chooseDataset(dataset) {
+  if (datasetSelect) datasetSelect.value = dataset;
+  if (matrixSelect) matrixSelect.value = dataset;
+  if (matrixSelect && window.studyMatrices) showMatrices();
+  if (datasetSelect && modelSelect && window.studyResults) showOutcomes();
 }
+if (matrixSelect) matrixSelect.addEventListener('change', () => chooseDataset(matrixSelect.value));
+if (datasetSelect) datasetSelect.addEventListener('change', () => chooseDataset(datasetSelect.value));
+if (window.studyResults && datasetSelect && modelSelect) {
+  modelSelect.setAttribute('aria-label', 'Phase 2 model for correction outcomes');
+  modelSelect.addEventListener('change',showOutcomes);
+}
+if (datasetSelect || matrixSelect) chooseDataset((datasetSelect || matrixSelect).value);
+
+function openAlgorithm(hash, focus = false) {
+  if (!/^#algorithm-[1-4]$/.test(hash)) return;
+  const panel = document.getElementById(hash.slice(1));
+  if (!panel || panel.tagName !== 'DETAILS') return;
+  panel.open = true;
+  if (focus) panel.querySelector('summary')?.focus({ preventScroll: true });
+}
+document.querySelectorAll('a[href^="#algorithm-"]').forEach(link => {
+  link.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    // Open before native fragment navigation, even when the URL already has this hash.
+    openAlgorithm(link.getAttribute('href'), true);
+  });
+});
+window.addEventListener('hashchange', () => openAlgorithm(window.location.hash));
+openAlgorithm(window.location.hash);
 if (body && window.studyResults) {
   const datasets = ['Reddit', 'Mixed Emotion', 'Additional Reddit 9000'];
   const methods = ['Direct', 'CoT', 'SELF-DISCOVER'];
