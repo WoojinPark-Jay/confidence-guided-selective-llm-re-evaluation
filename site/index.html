@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Confidence-Guided Selective LLM Re-Evaluation for Emotion Classification in Social Media. Research methods, results, and reproducibility materials.">
+  <meta property="og:title" content="Confidence-Guided Selective LLM Re-Evaluation">
+  <meta property="og:description" content="A two-phase framework for selective re-evaluation of social media emotion labels.">
+  <meta property="og:image" content="https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/assets/architecture.webp">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/">
+  <title>Confidence-Guided Selective LLM Re-Evaluation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/project-mark.svg?v=3">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="paper-header">
+    <h1><img class="project-mark" src="assets/project-mark.png" width="48" height="48" alt="">Confidence-Guided Selective LLM Re-Evaluation<br class="title-break"> <span>for Emotion Classification in Social Media</span></h1>
+    <p class="authors">Woojin Park<sup>*</sup> &nbsp; Sangyun Kang<sup>*</sup></p>
+    <p class="affiliation"><a href="https://www.korea.ac.kr/en/index.do"><img src="assets/korea-university.png" width="327" height="108" alt="Korea University"></a></p>
+    <p class="author-note">* Equal contribution</p>
+    <nav class="resources" aria-label="Research materials">
+      <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">Code</a>
+      <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/data/mixed_emotion">Dataset</a>
+      <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/docs/REPRODUCIBILITY.md">Reproducibility</a>
+      <a href="#results">Results</a>
+      <a class="tutorial-cta" href="tutorial.html">Tutorial</a>
+    </nav>
+  </header>
+  <main id="main">
+    <p class="research-question">Can an LLM improve classification by revisiting only the uncertain predictions?</p>
+    <figure class="teaser">
+      <a href="assets/architecture.webp" target="_blank" rel="noopener" aria-label="Open the full architecture figure"><img src="assets/architecture.webp" width="2800" height="1059" fetchpriority="high" alt="Full architecture: Reddit preprocessing and data splits, DistilBERT training and calibration, confidence-based routing, LLM re-evaluation, final label selection, and statistical audit."></a>
+      <figcaption><strong>Select &rarr; calibrate &rarr; re-evaluate &rarr; audit.</strong> Phase 1 selects DistilBERT from three classifier configurations. A calibrated threshold retains confident predictions; Phase 2 revisits only routed posts. The final audit counts corrections and new errors.</figcaption>
+    </figure>
+    <div class="evidence-overview" aria-label="Fixed-protocol evaluation summary">
+      <p class="evidence-context">Llama 3 SELF-DISCOVER &middot; fixed protocol &middot; 9,000 same-source Reddit posts</p>
+      <dl class="evidence-metrics"><div><dt>Posts re-evaluated</dt><dd>1.23% <span>111 of 9,000</span></dd></div><div><dt>Net corrections</dt><dd>+17 <span>30 corrected &minus; 13 introduced</span></dd></div><div><dt>Final accuracy</dt><dd>97.77% <span>from 97.58% with Phase 1</span></dd></div></dl>
+      <p class="evidence-scope">Improvement over Phase 1; no significant accuracy advantage over Direct or CoT on this set. <a href="#results">Results and statistical comparisons &rarr;</a></p>
+    </div>
+    <nav class="section-links" aria-label="Page sections"><a href="#contributions">Contributions</a><a href="#method">Method</a><a href="#results">Results</a><a href="#findings">Findings</a><a href="#algorithm">Algorithms</a><a href="#case-study">Recorded cases</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
+    <section class="contributions" id="contributions">
+      <div class="section-heading"><span class="section-number">RESEARCH CONTRIBUTIONS</span><h2>What this study adds</h2></div>
+      <p class="section-intro">A fixed routing policy decides which posts reach the LLM. End-to-end evaluation measures whether the corrections outweigh the new errors.</p>
+      <dl class="contribution-list">
+        <div><dt><span>01</span> Selective re-evaluation</dt><dd>Keep confident classifier predictions. Send only low-confidence posts to the LLM.</dd></div>
+        <div><dt><span>02</span> Calibration-defined routing</dt><dd>Fit temperature and select a threshold on calibration data, then freeze both for evaluation.</dd></div>
+        <div><dt><span>03</span> Corrections and new errors</dt><dd>Audit error capture separately from net corrections, comparing two LLMs and three protocols on matched routed inputs.</dd></div>
+        <div><dt><span>04</span> Task-adapted SELF-DISCOVER</dt><dd>Combine emotion-oriented modules, a reusable model-generated plan, and researcher-authored evidence checks.</dd></div>
+      </dl>
+      <p class="evaluation-scope">The main Reddit and Mixed Emotion evaluations informed prompt development and are exploratory. The separate 9,000-post evaluation used a fixed protocol on the same source. Labels are research proxies, not clinical diagnoses.</p>
+    </section>
+    <section class="prose" id="abstract"><details class="abstract-disclosure"><summary>Abstract</summary>
+
+      <p>Large language models can reconsider uncertain classifications, but re-evaluating every input increases generation workload and can introduce new errors. We study confidence-guided selective re-evaluation for three-class emotion classification in social media. A temperature-scaled DistilBERT classifier retains high-confidence predictions and routes the remaining posts to Llama 2 or Llama 3 using Direct, chain-of-thought (CoT), or task-adapted SELF-DISCOVER prompts.</p>
+      <p>On the exploratory 12,000-post Reddit evaluation, Llama 3 SELF-DISCOVER improves accuracy from 96.92% to 97.20% while re-evaluating 1.82% of posts. On a separate, fixed-protocol evaluation of 9,000 posts, it produces 17 net corrections while routing 1.23%, with a significant improvement over Phase 1 under the specified Holm adjustment. SELF-DISCOVER has the highest observed accuracy across the evaluated sets, but its differences from Direct and CoT are not statistically resolved on Reddit. The results describe a proxy-label classification task, not clinical diagnosis.</p>
+    </details></section>
+    <section id="method">
+      <div class="prose">
+        <div class="section-heading"><span class="section-number">01 / METHOD</span><h2>Confidence first, re-evaluation when needed</h2></div>
+        <h3 id="phase1-comparison">Phase 1: compare three classifiers, select DistilBERT</h3>
+        <p>Before LLM re-evaluation, we compare three classifier configurations on the same 12,000-post Reddit test set, using seeds 42, 43, and 44 and a four-trial search budget per model. DistilBERT has the highest observed mean accuracy and the fastest measured inference under this protocol.</p>
+      </div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Phase 1 model selection">
+        <table>
+          <caption>Phase 1 classifier comparison &middot; three-seed means</caption>
+          <thead><tr><th scope="col">Classifier</th><th scope="col">Adaptation</th><th scope="col">Accuracy &plusmn; SD</th><th scope="col">Macro F1 &plusmn; SD</th><th scope="col">Posts/s</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">DistilBERT (selected)</th><td>Full fine-tuning</td><td><strong>96.88 &plusmn; 0.04%</strong></td><td><strong>96.88 &plusmn; 0.04%</strong></td><td><strong>4,959.5</strong></td></tr>
+            <tr><th scope="row">Mistral 7B</th><td>Frozen backbone + linear head</td><td>95.36 &plusmn; 0.08%</td><td>95.36 &plusmn; 0.08%</td><td>51.7</td></tr>
+            <tr><th scope="row">Llama 2 7B</th><td>Frozen backbone + linear head</td><td>95.17 &plusmn; 0.07%</td><td>95.17 &plusmn; 0.07%</td><td>55.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="source-links">Source: manuscript Table 2. Throughput: NVIDIA A100-SXM4-40GB, fp16, batch 32, 256-token cap; mean of three timing repetitions, separate from training seeds. This compares the tested configurations, not fully fine-tuned 7B models. Bold denotes the highest observed value, not statistical significance.</p>
+      <div class="prose">
+        <p><strong>From model selection to the final pipeline.</strong> The downstream experiments retain the selected seed-42 DistilBERT run. Its Reddit accuracy is 96.92%, distinct from the 96.88% three-seed mean above. <a href="#baseline-to-final">Compare its predictions before and after re-evaluation &rarr;</a></p>
+        <h3>Calibration: fix the routing policy</h3>
+        <p class="tutorial-link"><a class="tutorial-cta" href="tutorial.html">Calibration tutorial</a><span>Temperature scaling &middot; NLL &middot; Brier &middot; ECE</span></p>
+        <p>Phase 1 predicts Depression, Neutral, or Happy. Temperature scaling adjusts the model's confidence, and a threshold determines which predictions are retained. The selected threshold is <i>&tau;</i> = 0.70: 11,807 of 12,000 calibration posts are accepted, with 1.940% empirical error and a 2.162% one-sided Clopper&ndash;Pearson upper bound.</p>
+        <p>The lowest candidate in the prespecified 0.70&ndash;1.00 grid already satisfies the 5% risk budget, so the grid boundary determines the operating point. Temperature fitting and threshold selection use the same calibration partition. The pointwise bound is not a simultaneous post-selection guarantee and does not guarantee the same risk under distribution shift.</p>
+      </div>
+      <details class="supporting-figure"><summary>Calibration diagnostics <span>Reliability, NLL, Brier score, and ECE</span></summary><figure>
+        <a href="assets/calibration.webp" target="_blank" rel="noopener" aria-label="Open the calibration figure"><img src="assets/calibration.webp" loading="lazy" alt="Reliability before and after temperature scaling, calibration metrics, and the risk-coverage curve."></a>
+        <figcaption><strong>Calibration.</strong> Temperature scaling reduces NLL, Brier score, and ECE. The marked operating point retains 98.39% of the calibration set.</figcaption>
+      </figure></details>
+      <div class="prose">
+        <h3>Phase 2: re-evaluate only routed posts</h3>
+        <p>Routed posts receive a fresh evaluation by Llama 2 or Llama 3; accepted posts retain their Phase 1 labels. Each protocol uses the same routed inputs within a dataset/model comparison.</p>
+        <p>Direct uses one generation call. CoT uses five dialogue turns, including acknowledgment and text-response turns. SELF-DISCOVER constructs a task-level plan from the class policy and 18 researcher-authored reasoning modules, then reuses it for each routed post. Plan construction receives neither evaluation posts nor reference labels.</p>
+      </div>
+      <figure class="method-plan">
+        <a href="assets/plan-construction.webp" target="_blank" rel="noopener" aria-label="Open the plan construction figure"><img src="assets/plan-construction.webp" loading="lazy" alt="Task-level SELECT, ADAPT, and IMPLEMENT plan construction, followed by fresh per-post execution using the saved model-specific plan."></a>
+        <figcaption><strong>SELF-DISCOVER adaptation.</strong> Each model retains its own unedited plan. Evidence-ledger and counterfactual checks are researcher-authored execution instructions, not discoveries made by the model. See the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">exact prompts</a> and <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/plans">saved plans</a>.</figcaption>
+      </figure>
+      <details class="protocol-details"><summary>Protocol settings and comparison conditions</summary>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Protocol comparison">
+        <table>
+          <thead><tr><th scope="col">Protocol</th><th scope="col">Calls per routed post</th><th scope="col">Phase 1 label</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Direct</th><td>1</td><td>Visible</td></tr>
+            <tr><th scope="row">CoT</th><td>5</td><td>Visible from the comparison turn</td></tr>
+            <tr><th scope="row">SELF-DISCOVER</th><td>1, after task-level plan construction</td><td>Withheld during reasoning</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="prose">The protocols differ in label visibility, call structure, and generation budget; the comparison is between complete configurations rather than an isolated test of reasoning components. If the final label cannot be parsed, the Phase 1 prediction is retained.</p>
+      </details>
+    </section>
+    <section id="results">
+      <div class="prose">
+        <div class="section-heading"><span class="section-number">02 / EVALUATION</span><h2>From the Phase 1 baseline to final predictions</h2></div>
+        <p>The additional 9,000-post Reddit run keeps model weights, temperature, threshold, prompts, and the saved plan fixed. It tests the pipeline on separate posts from the same source, not cross-platform generalization. The main Reddit and synthetic Mixed Emotion results are exploratory because both sets informed prompt development.</p>
+      </div>
+      <div id="baseline-to-final" class="baseline-comparison">
+        <h3>Phase 1 &rarr; final predictions on the same posts</h3>
+        <p>Both matrices use the same reference labels and posts. The baseline is the retained seed-42 DistilBERT run; the final pipeline adds selective Llama 3 SELF-DISCOVER re-evaluation. These are full-set results, not the three-seed model-selection averages.</p>
+        <label for="matrix-dataset">Evaluation set</label>
+        <select id="matrix-dataset"><option value="Additional Reddit 9000">Additional Reddit (9,000)</option><option value="Reddit">Reddit (12,000)</option><option value="Mixed Emotion">Mixed Emotion (300)</option></select>
+        <p id="matrix-gain" aria-live="polite"></p>
+        <div id="matrix-pair" class="matrix-pair"></div>
+        <p class="source-links">Rows: reference labels. Columns: predictions. Cells show counts and within-class percentages; both matrices share the same 0&ndash;100% color scale. <a id="matrix-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/results/predictions">Text-free source predictions</a>.</p>
+        <noscript>Enable JavaScript to compare matrices. The static results table below reports all three baseline and final accuracies.</noscript>
+      </div>
+      <div class="result-explorer">
+        <h3>What changes after re-evaluation?</h3>
+        <p>In the fixed 9,000-post evaluation, only 111 posts reached the LLM. SELF-DISCOVER corrected 30 errors but changed 13 correct predictions to errors: 17 more correct predictions overall, or +0.19 percentage points. The other 8,889 predictions stayed with Phase 1.</p>
+        <p class="gain-equation">Accuracy gain = (corrected errors &minus; introduced errors) / all posts</p>
+        <div class="reader-toolbar"><label for="result-dataset">Dataset</label><select id="result-dataset"><option value="Additional Reddit 9000">Additional Reddit (9,000)</option><option value="Reddit">Reddit (12,000)</option><option value="Mixed Emotion">Mixed Emotion (300)</option></select><label for="result-model">Model</label><select id="result-model"><option>Llama 3</option><option>Llama 2</option></select></div>
+        <p class="explorer-note" id="result-context">Fixed-protocol evaluation. 111 of 9,000 posts routed; Phase 1 accuracy 97.58%.</p>
+        <div class="legend" aria-hidden="true"><span>Corrected</span><span>Introduced</span></div>
+        <div id="outcome-chart" role="group" aria-label="Observed correction counts" aria-live="polite"><p>Direct: 32 corrected &minus; 19 introduced = +13. CoT: 28 &minus; 15 = +13. SELF-DISCOVER: 30 &minus; 13 = +17.</p></div>
+        <p class="source-links">Observed counts from the released predictions. Bar lengths use the same scale within each selected comparison.</p>
+      </div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Main results">
+        <table class="summary-table">
+          <caption>Llama 3 SELF-DISCOVER compared with Phase 1</caption>
+          <thead><tr><th scope="col">Evaluation set</th><th scope="col">Phase 1</th><th scope="col">Final accuracy</th><th scope="col">Routed</th><th scope="col">Corrected / introduced</th><th scope="col">Net</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Reddit (12,000)</th><td>96.92%</td><td>97.20%</td><td>1.82%</td><td>72 / 38</td><td>+34</td></tr>
+            <tr><th scope="row">Mixed Emotion (300)</th><td>83.67%</td><td>92.67%</td><td>28.67%</td><td>28 / 1</td><td>+27</td></tr>
+            <tr><th scope="row">Additional Reddit (9,000)</th><td>97.58%</td><td>97.77%</td><td>1.23%</td><td>30 / 13</td><td>+17</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure>
+        <a href="assets/corrections.webp" target="_blank" rel="noopener" aria-label="Open the correction counts figure"><img src="assets/corrections.webp" loading="lazy" alt="Corrected and introduced errors for Llama 2 and Llama 3 across Direct, CoT, and SELF-DISCOVER configurations."></a>
+        <figcaption><strong>Corrected and introduced errors.</strong> Net correction is the number of Phase 1 errors corrected minus the number of previously correct predictions changed to errors.</figcaption>
+      </figure>
+      <div class="prose">
+        <h3 id="paired-comparisons" class="finding-target" tabindex="-1">Paired statistical comparisons</h3>
+        <p>On the additional evaluation, the exact McNemar <i>p</i>-value for SELF-DISCOVER versus Phase 1 is 0.0137 (Holm-adjusted <i>p</i> = 0.0412 within the three-test family). Direct and CoT each yield 13 net corrections. Their accuracy differences from SELF-DISCOVER are not significant (both Holm-adjusted <i>p</i> = 0.9614).</p>
+        <h3 id="generation-workload" class="finding-target" tabindex="-1">Recorded generation workload</h3>
+        <p>Recorded model-generation time on an NVIDIA L4 is 54.9 s for Direct, 3,116.4 s for CoT, and 2,568.5 s for SELF-DISCOVER. Thus, Direct produces four fewer net corrections than SELF-DISCOVER at about 2.1% of its recorded generation time. These measurements cover generation, not total pipeline runtime.</p>
+      </div>
+      <details>
+        <summary>All 15 evaluated configurations</summary>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="All evaluated configurations">
+          <table class="comparison-table">
+            <caption>Full-set results. Bold indicates the highest unrounded accuracy or macro F1 within a dataset/model group, not statistical significance.</caption>
+            <thead><tr><th scope="col">Dataset</th><th scope="col">Model</th><th scope="col">Protocol</th><th scope="col">Accuracy (%)</th><th scope="col">Macro F1 (%)</th><th scope="col">Corrected</th><th scope="col">Introduced</th><th scope="col">Net</th></tr></thead>
+            <tbody id="all-results-body"></tbody>
+          </table>
+        </div>
+        <noscript><p>The full results are available in the linked metrics file below.</p></noscript>
+      </details>
+      <p class="source-links"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_metrics.json">Metrics</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_statistics.json">Paired statistical tests</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/additional9000_generation_workload.csv">Generation workload</a></p>
+      <figure id="routing-analysis" class="finding-target" tabindex="-1">
+        <a href="assets/routing.webp" target="_blank" rel="noopener" aria-label="Open the routing analysis figure"><img src="assets/routing.webp" loading="lazy" alt="Confidence distributions, error capture by routing budget, and error concentration in routed posts."></a>
+        <figcaption><strong>Routing analysis.</strong> On Reddit, routed posts have a 44.95% Phase 1 error rate compared with 3.08% over the full set (14.58 times higher). Confidence routing concentrates errors but leaves some errors in the accepted set.</figcaption>
+      </figure>
+      <figure>
+        <a href="assets/additional-confusion.webp" target="_blank" rel="noopener" aria-label="Open the additional evaluation confusion matrices"><img src="assets/additional-confusion.webp" loading="lazy" alt="Direct, CoT, and SELF-DISCOVER confusion matrices on the additional 9,000-post evaluation."></a>
+        <figcaption><strong>Additional evaluation.</strong> Rows are reference labels and columns are final predictions. Each method is evaluated on the same 9,000 posts.</figcaption>
+      </figure>
+    </section>
+    <section id="findings" class="findings">
+      <div class="section-heading"><span class="section-number">KEY FINDINGS</span><h2>What the results establish</h2></div>
+      <ol class="finding-list">
+        <li><div><h3>Confidence routing concentrates errors.</h3><p>In the main Reddit evaluation, 1.82% of posts contain 26.49% of Phase 1 errors. Their error rate is 44.95%, compared with 3.08% overall. Routing identifies a difficult subset, but leaves errors outside it.</p></div><details class="finding-evidence"><summary>View routing evidence</summary><figure><a href="assets/routing.webp" target="_blank" rel="noopener"><img src="assets/routing.webp" width="2947" height="878" loading="lazy" alt="Confidence distributions, error capture by routing budget, and error concentration in routed posts."></a><figcaption>Reddit: 1.82% routed, capturing 26.49% of Phase 1 errors. Routed error rate: 44.95%, versus 3.08% overall (14.58 times higher).</figcaption></figure></details></li>
+        <li><div><h3>Selective re-evaluation produces a modest net gain.</h3><p>On the fixed-protocol same-source 9,000-post set, SELF-DISCOVER raises accuracy from 97.58% to 97.77%, with 17 net corrections. The Phase 1 comparison is significant under the specified three-test Holm adjustment (p = 0.0412).</p></div><details class="finding-evidence"><summary>View paired comparisons</summary><p>Fixed-protocol additional Reddit evaluation (9,000 posts).</p><div class="table-wrap"><table><thead><tr><th>Comparison</th><th>Holm-adjusted p</th><th>Interpretation</th></tr></thead><tbody><tr><td>SELF-DISCOVER vs. Phase 1</td><td>0.0412</td><td>Significant within the specified three-test family</td></tr><tr><td>SELF-DISCOVER vs. Direct</td><td>0.9614</td><td>No significant accuracy difference</td></tr><tr><td>SELF-DISCOVER vs. CoT</td><td>0.9614</td><td>No significant accuracy difference</td></tr></tbody></table></div><p class="source-links"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/recomputed_statistics.json">Source: paired statistical tests</a></p></details></li>
+        <li><div><h3>Protocol choice is an accuracy&ndash;workload tradeoff.</h3><p>Direct yields 13 net corrections versus 17 for SELF-DISCOVER at about 2.1% of its recorded generation time. Their accuracy difference is not significant on the additional set; the highest observed accuracy is not evidence of universal superiority.</p></div><details class="finding-evidence"><summary>View generation workload</summary><p>Same 111 routed posts on NVIDIA L4; model-generation time, not total pipeline runtime.</p><div class="table-wrap"><table><thead><tr><th>Protocol</th><th>Generation time</th><th>Net corrections</th></tr></thead><tbody><tr><td>Direct</td><td>54.9 s</td><td>+13</td></tr><tr><td>CoT</td><td>3,116.4 s</td><td>+13</td></tr><tr><td>SELF-DISCOVER</td><td>2,568.5 s</td><td>+17</td></tr></tbody></table></div><p class="source-links"><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/additional9000_generation_workload.csv">Source: recorded generation workload</a></p></details></li>
+      </ol>
+      <p class="findings-scope">These task-specific findings do not establish clinical validity or cross-platform generalization. <a href="#data">Data construction and scope &rarr;</a></p>
+    </section>
+    <section class="paper-algorithms" id="algorithm">
+      <div class="section-heading"><span class="section-number">03 / ALGORITHMS</span><h2>The four procedures in the paper</h2></div>
+      <p class="section-intro">Policy selection, inference, evaluation, and SELF-DISCOVER execution are separate procedures. The panels reproduce Algorithms 1&ndash;4 directly from the manuscript PDF, preserving mathematical notation and line numbering.</p>
+      <nav class="procedure-map" aria-label="Algorithm sequence">
+        <a href="#algorithm-1"><small>Before testing</small><strong>1. Calibrate &amp; select</strong><span>Fix T* and &tau;*</span></a>
+        <a href="#algorithm-2"><small>For each post</small><strong>2. Classify &amp; route</strong><span>Keep or re-evaluate</span></a>
+        <a href="#algorithm-4"><small>For routed posts</small><strong>4. Execute saved plan</strong><span>Generate and parse</span></a>
+        <a href="#algorithm-3"><small>After prediction</small><strong>3. Audit outcomes</strong><span>Corrections minus new errors</span></a>
+      </nav>
+      <p class="algorithm-note">The runtime order is 1 &rarr; 2 &rarr; 4 &rarr; 3 for SELF-DISCOVER; numbering follows the paper. Algorithms 1 and 3 are not part of per-post LLM reasoning.</p>
+      <details class="paper-algorithm" id="algorithm-1" open>
+        <summary><span class="algorithm-number">Algorithm 1</span><span>Calibrated confidence-guided routing</span><small>Calibration only</small></summary>
+        <figure class="original-algorithm">
+          <div class="algorithm-image-scroll" tabindex="0" role="region" aria-label="Original manuscript Algorithm 1"><a href="assets/algorithm-1.png" target="_blank" rel="noopener"><img src="assets/algorithm-1.png" width="1038" height="663" loading="lazy" alt="Original manuscript Algorithm 1, including mathematical notation and numbered pseudocode. A text equivalent follows."></a></div>
+          <figcaption>Manuscript Algorithm 1 &middot; page 9 &middot; <a href="assets/algorithm-1.png" target="_blank" rel="noopener">Full-resolution image</a></figcaption>
+        </figure>
+        <details class="algorithm-transcript"><summary>Accessible text equivalent</summary>
+        <div class="algorithm-body"><p><b>Input</b> D<sub>val</sub>, D<sub>cal</sub>, classifier f<sub>&theta;</sub>; risk budget &alpha;, confidence level 1 &minus; &delta;, grid T, minimum count m<sub>min</sub>.</p><p><b>Output</b> Temperature T* and threshold &tau;*.</p>
+          <ol class="algorithm-lines"><li>Select the best checkpoint using D<sub>val</sub>.</li><li>Fit T* on D<sub>cal</sub> by minimizing negative log-likelihood.</li><li>Compute calibrated confidences c<sub>i</sub> on D<sub>cal</sub>.</li><li>For each threshold &tau; in the prespecified grid:</li><li class="indented">Form accepted set A(&tau;) and routed set R(&tau;).</li><li class="indented">Compute coverage, routing rate, and the upper risk bound.</li><li>Retain candidates with upper risk bound &le; &alpha; and |A(&tau;)| &ge; m<sub>min</sub>.</li><li>If no candidate remains, flag infeasibility; a fallback is not risk-feasible.</li><li>Choose a retained threshold with maximum coverage.</li><li>Fix T* and &tau;* before held-out testing.</li></ol>
+        </div>
+        </details>
+      </details>
+      <details class="paper-algorithm" id="algorithm-2">
+        <summary><span class="algorithm-number">Algorithm 2</span><span>Two-phase inference with fixed calibrated routing policy</span><small>One post</small></summary>
+        <figure class="original-algorithm">
+          <div class="algorithm-image-scroll" tabindex="0" role="region" aria-label="Original manuscript Algorithm 2"><a href="assets/algorithm-2.png" target="_blank" rel="noopener"><img src="assets/algorithm-2.png" width="1038" height="675" loading="lazy" alt="Original manuscript Algorithm 2, including mathematical notation and numbered pseudocode. A text equivalent follows."></a></div>
+          <figcaption>Manuscript Algorithm 2 &middot; page 9 &middot; <a href="assets/algorithm-2.png" target="_blank" rel="noopener">Full-resolution image</a></figcaption>
+        </figure>
+        <details class="algorithm-transcript"><summary>Accessible text equivalent</summary>
+        <div class="algorithm-body"><p><b>Input</b> Post x; classifier f<sub>&theta;</sub>; fixed T* and &tau;*; Phase 2 model and prompting protocol g.</p><p><b>Output</b> Final label and parsing status.</p>
+          <ol class="algorithm-lines"><li>Obtain the Phase 1 input x<sup>(1)</sup> from post record x.</li><li>Compute logits z = f<sub>&theta;</sub>(x<sup>(1)</sup>) and calibrated probabilities q<sub>k</sub>(T*).</li><li>Set Phase 1 label y<sub>1</sub> = arg max<sub>k</sub> q<sub>k</sub>(T*) and confidence c = max<sub>k</sub> q<sub>k</sub>(T*).</li><li>If c &ge; &tau;*: return y<sub>1</sub>. No Phase 2 call.</li><li>Otherwise, retrieve the minimally sanitized original text x<sup>(2)</sup>.</li><li>Generate a response with g using its prescribed inputs.</li><li>Parse exactly one label from {Depression, Neutral, Happy}.</li><li>If parsing fails, retain y<sub>1</sub> and record the failure.</li><li>Return the parsed label or recorded fallback.</li></ol>
+        </div>
+        </details>
+      </details>
+      <details class="paper-algorithm" id="algorithm-3">
+        <summary><span class="algorithm-number">Algorithm 3</span><span>Audited end-to-end evaluation of routed predictions</span><small>All evaluation posts</small></summary>
+        <figure class="original-algorithm">
+          <div class="algorithm-image-scroll" tabindex="0" role="region" aria-label="Original manuscript Algorithm 3"><a href="assets/algorithm-3.png" target="_blank" rel="noopener"><img src="assets/algorithm-3.png" width="1038" height="525" loading="lazy" alt="Original manuscript Algorithm 3, including mathematical notation and numbered pseudocode. A text equivalent follows."></a></div>
+          <figcaption>Manuscript Algorithm 3 &middot; page 9 &middot; <a href="assets/algorithm-3.png" target="_blank" rel="noopener">Full-resolution image</a></figcaption>
+        </figure>
+        <details class="algorithm-transcript"><summary>Accessible text equivalent</summary>
+        <div class="algorithm-body"><p><b>Input</b> Reference labels y<sub>i</sub>, Phase 1 predictions, route indicators r<sub>i</sub>, and parsed Phase 2 labels.</p><p><b>Output</b> Corrected errors C, introduced errors I, net corrections C &minus; I, and full-set metrics.</p>
+          <ol class="algorithm-lines"><li>For each example, use Phase 2 only if it was routed and parsing succeeded; otherwise use Phase 1.</li><li>Count C: routed examples where Phase 1 was wrong and the final prediction is correct.</li><li>Count I: routed examples where Phase 1 was correct and the final prediction is wrong.</li><li>Report C, I, and C &minus; I.</li><li>Recompute end-to-end metrics over all examples, including accepted posts.</li></ol>
+        </div>
+        </details>
+      </details>
+      <details class="paper-algorithm" id="algorithm-4">
+        <summary><span class="algorithm-number">Algorithm 4</span><span>Final task-level SELF-DISCOVER re-evaluation</span><small>Saved plan + routed posts</small></summary>
+        <figure class="original-algorithm">
+          <div class="algorithm-image-scroll" tabindex="0" role="region" aria-label="Original manuscript Algorithm 4"><a href="assets/algorithm-4.png" target="_blank" rel="noopener"><img src="assets/algorithm-4.png" width="1038" height="696" loading="lazy" alt="Original manuscript Algorithm 4, including mathematical notation and numbered pseudocode. A text equivalent follows."></a></div>
+          <figcaption>Manuscript Algorithm 4 &middot; page 10 &middot; <a href="assets/algorithm-4.png" target="_blank" rel="noopener">Full-resolution image</a></figcaption>
+        </figure>
+        <details class="algorithm-transcript"><summary>Accessible text equivalent</summary>
+        <div class="algorithm-body"><p><b>Input</b> Model g; researcher-authored task, policy, modules, execution guidance; routed posts.</p><p><b>Output</b> Stored response, parsing status, and final prediction for each routed post.</p>
+          <ol class="algorithm-lines"><li>If a retained plan for g exists: load it and skip discovery.</li><li>Otherwise, give g task materials only; no post text or labels.</li><li>Have g SELECT relevant modules and ADAPT them to the task.</li><li>Have g IMPLEMENT the procedure; store it as the plan.</li><li>For each routed post, execute the plan on its original text without the Phase 1 label.</li><li>Request source quotes, three-label evidence, and a counterfactual check.</li><li>Parse the final label; retain Phase 1 if parsing fails.</li><li>Store the response, parsed status, and final prediction.</li></ol>
+        </div>
+        </details>
+      </details>
+      <p class="algorithm-note">Selected operating point: T* = 1.480195; &tau;* = 0.70. The calibration risk constraint was non-binding within the prespecified grid. Source: manuscript Section V and the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/notebooks/colab">released notebooks</a>.</p>
+    </section>
+    <section class="case-study" id="case-study">
+      <div class="section-heading"><span class="section-number">04 / RECORDED CASES</span><h2>From input to recorded outcome</h2></div>
+      <p class="section-intro">Llama 3 SELF-DISCOVER on the synthetic Mixed Emotion set. Original inputs and unedited model responses from the final v6c run; no live inference.</p>
+      <fieldset class="case-options"><legend>Recorded outcome</legend>
+        <label><input type="radio" name="case-choice" value="0" checked><span>Correction</span></label>
+        <label><input type="radio" name="case-choice" value="1"><span>Introduced error</span></label>
+        <label><input type="radio" name="case-choice" value="2"><span>Parsing fallback</span></label>
+        <label><input type="radio" name="case-choice" value="3"><span>Not routed</span></label>
+      </fieldset>
+      <div class="case-record-line"><span id="case-id">MEV2_DEP_046</span><span>Synthetic post &middot; saved experiment record</span></div>
+      <article id="case-content">
+
+        <div class="case-decisions">
+          <div><h3>Phase 1</h3><strong id="case-phase1">Happy</strong><p id="case-confidence">68.82% calibrated confidence</p></div>
+          <div><h3>Routing decision</h3><strong id="case-routing">Re-evaluate</strong><p id="case-route-note">68.82% &lt; 70% threshold</p></div>
+          <div><h3>Final prediction</h3><strong id="case-final">Depression</strong><p id="case-outcome">Corrected against the reference target</p></div>
+        </div>
+        <p class="case-target">Reference target: <strong id="case-target">Depression</strong><span>Evaluation only; not supplied to the model.</span></p>
+        <div class="case-evidence-grid"><div class="case-input">
+          <h3>Input post</h3><blockquote id="case-post">During recovering after a difficult week, I noticed a small success that I had been waiting for, and I kept track of dates, forms, and reminders. Even with those ordinary or positive moments, there was the thought that I was falling behind everyone else. I kept thinking about whether the moment was a turning point or just a pause, especially while making tea. By the end, the positive parts felt brief, and the heavier sadness was still the feeling I carried with me.</blockquote>
+          <p class="case-input-note">Full synthetic text, unchanged. Highlighting is editorial, not model attribution.</p>
+        </div><div class="case-evidence">
+        <div id="case-reasoning">
+          <h3>Evidence in the model response</h3>
+          <p class="stage-note">Exact excerpts, not a reconstruction of internal reasoning.</p>
+          <div id="case-excerpt"><p>The model identifies unresolved sadness despite the brief positive event. The full recorded response is available in the source records below.</p></div>
+
+        </div>
+        <p id="case-no-response" hidden>No LLM response exists for this case. The router retained the Phase 1 label.</p>
+        <p class="case-model-note">The plan is shared across posts; this response is generated for this input. Intermediate claims may be imperfect even when the final label is correct.</p>
+        </div></div>
+        <details id="case-full"><summary>Full recorded model response <span>Unedited output</span></summary><div id="case-report" class="case-report"></div></details>
+        <p id="case-interpretation" class="case-interpretation">The label changes from Happy to Depression. This is one of 28 corrections in the 300-example set; one new error gives 27 net corrections.</p>
+      </article>
+      <p class="stage-note">Examples were selected to show a correction, an introduced error, a parsing fallback, and an accepted error. They are not a representative sample. <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/data/mixed_emotion/site_case_records.json">Records and selection provenance</a>.</p>
+    </section>
+    <section class="prompt-reader" id="prompt-reader">
+      <div class="section-heading"><span class="section-number">05 / SOURCE MATERIALS</span><h2>Prompts and saved plans</h2></div>
+      <p><strong>Prompts are instructions; saved plans are model outputs.</strong> Direct asks for one label. CoT divides re-evaluation into five calls. SELF-DISCOVER first builds a reusable task-level plan, then applies it to each routed post.</p>
+      <div class="tabs" role="tablist" aria-label="Prompt protocol">
+        <button id="prompt-direct" role="tab" aria-selected="true" aria-controls="prompt-panel" data-prompt="Direct">Direct</button>
+        <button id="prompt-cot" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="CoT">CoT</button>
+        <button id="prompt-sd" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="SELF-DISCOVER">SELF-DISCOVER</button>
+        <button id="prompt-plans" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-prompt="Saved plans">Saved plans</button>
+      </div>
+      <div id="prompt-panel" role="tabpanel" aria-labelledby="prompt-direct">
+        <div class="reader-toolbar"><label for="prompt-file">Stage</label><select id="prompt-file" disabled><option value="0">Prompt</option></select><a id="prompt-source" href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/prompts/direct/prompt.txt">Source file</a></div>
+        <p id="prompt-description">Direct receives the post, shared classification policy, and Phase 1 label. It returns a final label without a rationale.</p>
+        <p id="prompt-stage-note" class="stage-note">{policy} is the shared label policy; {text} is one post; {phase1_label} is the classifier's prediction.</p>
+        <pre tabindex="0" aria-label="Exact prompt text"><code id="prompt-text">You are an expert annotator for research-oriented, non-clinical emotion classification.
+
+{policy}
+
+Text:
+{text}
+
+The Phase 1 classifier predicted: {phase1_label}
+
+Select the final label that best represents the text. Return no rationale and end with exactly one line in this form:
+Final label: Depression
+or Final label: Neutral
+or Final label: Happy</code></pre>
+        <p class="source-links" id="prompt-status">Original files: <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">prompts</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/plans">saved plans</a>.</p>
+      </div>
+      <noscript><p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/prompts">Read the prompts in the repository.</a></p></noscript>
+    </section>
+    <section class="prose" id="data">
+      <div class="section-heading"><span class="section-number">06 / DATA</span><h2>Data and annotation</h2></div>
+      <p>The Reddit labels are community-derived proxies for Depression, Neutral, and Happy. The 300-example synthetic Mixed Emotion set tests mixed or shifting affect under a shared classification policy and informed Phase 2 prompt development.</p>
+      <p>Mixed Emotion was constructed using OpenAI GPT-5 via Codex and versioned scripts, with researcher-authored scenario and label constraints. Scenario-specific sentence templates produce recurring sentence frames; the examples should not be read as individually generated, unconstrained LLM samples. See the <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/docs/manuscript_sync_20261025.md">manuscript v3 construction clarification</a>.</p>
+      <p>Two researchers uninvolved in data generation or Phase 2 prompt development independently annotated all 300 examples without seeing targets, scenario metadata, model outputs, or each other's responses. They agreed on 277 examples (92.33%; unweighted Cohen's &kappa; = 0.8847). Agreement with the original targets was 96.00% and 96.33%. A third researcher checked completeness, record alignment, and statistics. No adjudication or post-audit relabeling was performed.</p>
+      <p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/tree/main/data/mixed_emotion">Synthetic data and anonymized annotations</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/results/reports/mixed_emotion_annotation_audit.json">Annotation statistics</a></p>
+      <h3>Scope</h3>
+      <p>Subreddit-derived labels can carry topic and lexical biases. The annotation audit supports consistency with the shared policy, not clinical validity or generalization to real-world populations. The results do not establish a universal advantage of SELF-DISCOVER, the isolated contribution of its planning and evidence checks, or generalization to newer models and other platforms.</p>
+    </section>
+    <section class="prose" id="reproduce">
+      <div class="section-heading"><span class="section-number">07 / REPRODUCIBILITY</span><h2>Sources and verification</h2></div>
+      <p>The public repository includes frozen configurations, exact prompts, saved plans, synthetic data, text-free predictions, aggregate reports, and verification scripts. Raw Reddit text, user identifiers, model weights, and the manuscript PDF are not redistributed here.</p>
+      <pre><code>git clone https://github.com/WoojinPark-Jay/\
+confidence-guided-selective-llm-re-evaluation.git
+cd confidence-guided-selective-llm-re-evaluation
+
+python3 scripts/reproduce_results.py
+python3 scripts/reproduce_statistics.py
+python3 scripts/reproduce_annotation_audit.py
+python3 scripts/validate_release.py
+python3 -m unittest discover -s tests -v</code></pre>
+      <p><a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/docs/REPRODUCIBILITY.md">Reproduction instructions</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/DATA_AVAILABILITY.md">Data availability</a> &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation/blob/main/docs/PRIVACY_AND_ETHICS.md">Privacy and ethics</a></p>
+    </section>
+  </main>
+  <footer>Research project materials &middot; <a href="https://github.com/WoojinPark-Jay/confidence-guided-selective-llm-re-evaluation">GitHub</a></footer>
+  <script src="results-data.js"></script>
+  <script src="prompt-data.js"></script>
+  <script src="case-data.js"></script>
+  <script src="cases.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

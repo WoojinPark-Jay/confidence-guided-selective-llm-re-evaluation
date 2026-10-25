@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Confidence threshold</title>
+  <rect x="3" y="1" width="26" height="30" rx="3" fill="#14191c"/>
+  <path d="M8 9h16M8 14h11" stroke="#f4f4f4" stroke-width="2"/>
+  <path d="M8 23h16" stroke="#737b80" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="19" cy="23" r="3" fill="#b32c48"/>
+</svg>
