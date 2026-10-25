@@ -15,6 +15,16 @@ a new experimental release or an author-approved submission version.
 
 ## Unchanged public artifacts
 
+### Follow-up: manuscript v2
+
+Collaborator commit `2521f56` versions the PDF and Overleaf ZIP as
+`2026_10_25_v2`, preserving the earlier files. The final Index Terms are:
+Chain-of-thought, confidence-guided routing, emotion classification,
+large language models, mental health natural language processing,
+model cascades, probability calibration, SELF-DISCOVER, social media text analysis.
+This keyword-only update orders the nine terms alphabetically and does not
+change the experimental artifacts or create a public release tag.
+
 No experiments, code, datasets, predictions, metrics, statistical tests,
 prompts, saved plans, or model settings changed in this synchronization.
 The manuscript PDF and Overleaf ZIP remain in the collaborator repository;
