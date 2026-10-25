@@ -2,7 +2,6 @@
 
 Reproducibility package for **“Confidence-Guided Selective LLM Re-Evaluation for Emotion Classification in Social Media.”**
 
-**Project page:** <https://woojinpark-jay.github.io/confidence-guided-selective-llm-re-evaluation/>
 
 Lead authors (equal contribution): **Woojin Park** and **Sangyun Kang**.
 
