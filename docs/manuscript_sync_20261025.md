@@ -31,4 +31,14 @@ The manuscript PDF and Overleaf ZIP remain in the collaborator repository;
 neither is added to this public repository.
 
 A manuscript-linked release tag remains pending final author approval.
+
+### Follow-up: manuscript v3
+
+Collaborator commit `50e1fa5` adds the versioned `2026_10_25_v3` PDF and
+Overleaf ZIP. Sections IV-E and IV-H now describe construction using
+OpenAI GPT-5 via Codex and versioned scripts; IV-E also identifies the
+scenario-specific sentence templates and recurring sentence frames.
+The MSP introduction is kept with its equation on page 8. The manuscript
+remains 32 pages. This clarifies existing construction and adjusts layout;
+it does not regenerate data or change results, prompts, or model settings.
 This documentation update does not create a release tag or archival DOI.
