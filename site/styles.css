@@ -296,6 +296,7 @@ body:not(.tutorial-page) main { max-width: 1008px; }
 body:not(.tutorial-page) .paper-header { max-width: 1008px; padding: 32px 24px 18px; }
 body:not(.tutorial-page) h1 { max-width: 960px; font-size: 34px; line-height: 1.18; margin-bottom: 18px; text-wrap: balance; }
 body:not(.tutorial-page) h1 span { font-weight: normal; }
+body:not(.tutorial-page) h1 .project-mark { display: inline-block; width: 32px; height: 32px; margin-right: 10px; vertical-align: -3px; }
 body:not(.tutorial-page) .resources { gap: 8px 24px; margin-top: 16px; }
 body:not(.tutorial-page) .resources a { padding-block: 5px; }
 body:not(.tutorial-page) .resources .tutorial-cta { padding: 5px 0; }
@@ -388,6 +389,7 @@ body:not(.tutorial-page) footer { max-width: var(--reading-width); margin-top: 3
   body:not(.tutorial-page) main { padding-inline: 16px; }
   body:not(.tutorial-page) .paper-header { padding-inline: 16px; }
   body:not(.tutorial-page) h1 { font-size: 25px; }
+  body:not(.tutorial-page) h1 .project-mark { width: 25px; height: 25px; margin-right: 7px; }
   body:not(.tutorial-page) .resources { gap: 4px 18px; }
   body:not(.tutorial-page) .section-links { justify-content: flex-start; gap: 5px 18px; }
   body:not(.tutorial-page) .tabs { gap: 0 16px; }
