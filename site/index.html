@@ -16,7 +16,9 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="paper-header">
-    <h1><img class="project-mark" src="assets/project-mark.png" width="48" height="48" alt="">Confidence-Guided Selective LLM Re-Evaluation<br class="title-break"> <span>for Emotion Classification in Social Media</span></h1>
+    <p class="project-eyebrow">RESEARCH PROJECT · EMOTION CLASSIFICATION</p>
+    <h1><img class="project-mark" src="assets/project-mark.png" width="48" height="48" alt="">Confidence-Guided<br class="title-break"> Selective LLM Re-Evaluation</h1>
+    <p class="paper-subtitle">for Emotion Classification in Social Media</p>
     <p class="authors">Woojin Park<sup>*</sup> &nbsp; Sangyun Kang<sup>*</sup></p>
     <p class="affiliation"><a href="https://www.korea.ac.kr/en/index.do"><img src="assets/korea-university.png" width="327" height="108" alt="Korea University"></a></p>
     <p class="author-note">* Equal contribution</p>
@@ -27,9 +29,10 @@
       <a href="#results">Results</a>
       <a class="tutorial-cta" href="tutorial.html">Tutorial</a>
     </nav>
+    <nav class="section-links" aria-label="Page sections"><a href="#contributions">Overview</a><a href="#method">Method</a><a href="#results">Results</a><a href="#algorithm">Algorithms</a><a href="#case-study">Cases</a><a href="#prompt-reader">Prompts</a><a href="#reproduce">Reproduce</a></nav>
   </header>
   <main id="main">
-    <p class="research-question">Can an LLM improve classification by revisiting only the uncertain predictions?</p>
+    <p class="research-question">Retain confident classifier predictions. Re-evaluate uncertain posts with an LLM, then measure corrections against new errors.</p>
     <figure class="teaser">
       <a href="assets/architecture.webp" target="_blank" rel="noopener" aria-label="Open the full architecture figure"><img src="assets/architecture.webp" width="2800" height="1059" fetchpriority="high" alt="Full architecture: Reddit preprocessing and data splits, DistilBERT training and calibration, confidence-based routing, LLM re-evaluation, final label selection, and statistical audit."></a>
       <figcaption><strong>Select &rarr; calibrate &rarr; re-evaluate &rarr; audit.</strong> Phase 1 selects DistilBERT from three classifier configurations. A calibrated threshold retains confident predictions; Phase 2 revisits only routed posts. The final audit counts corrections and new errors.</figcaption>
@@ -39,7 +42,6 @@
       <dl class="evidence-metrics"><div><dt>Posts re-evaluated</dt><dd>1.23% <span>111 of 9,000</span></dd></div><div><dt>Net corrections</dt><dd>+17 <span>30 corrected &minus; 13 introduced</span></dd></div><div><dt>Final accuracy</dt><dd>97.77% <span>from 97.58% with Phase 1</span></dd></div></dl>
       <p class="evidence-scope">Improvement over Phase 1; no significant accuracy advantage over Direct or CoT on this set. <a href="#results">Results and statistical comparisons &rarr;</a></p>
     </div>
-    <nav class="section-links" aria-label="Page sections"><a href="#contributions">Contributions</a><a href="#method">Method</a><a href="#results">Results</a><a href="#findings">Findings</a><a href="#algorithm">Algorithms</a><a href="#case-study">Recorded cases</a><a href="#prompt-reader">Prompts &amp; plans</a><a href="#data">Data</a><a href="#reproduce">Reproducibility</a></nav>
     <section class="contributions" id="contributions">
       <div class="section-heading"><span class="section-number">RESEARCH CONTRIBUTIONS</span><h2>What this study adds</h2></div>
       <p class="section-intro">A fixed routing policy decides which posts reach the LLM. End-to-end evaluation measures whether the corrections outweigh the new errors.</p>
@@ -144,10 +146,10 @@
           </tbody>
         </table>
       </div>
-      <figure>
+      <details class="supporting-figure"><summary>Correction counts across all six configurations</summary><figure>
         <a href="assets/corrections.webp" target="_blank" rel="noopener" aria-label="Open the correction counts figure"><img src="assets/corrections.webp" loading="lazy" alt="Corrected and introduced errors for Llama 2 and Llama 3 across Direct, CoT, and SELF-DISCOVER configurations."></a>
         <figcaption><strong>Corrected and introduced errors.</strong> Net correction is the number of Phase 1 errors corrected minus the number of previously correct predictions changed to errors.</figcaption>
-      </figure>
+      </figure></details>
       <div class="prose">
         <h3 id="paired-comparisons" class="finding-target" tabindex="-1">Paired statistical comparisons</h3>
         <p>On the additional evaluation, the exact McNemar <i>p</i>-value for SELF-DISCOVER versus Phase 1 is 0.0137 (Holm-adjusted <i>p</i> = 0.0412 within the three-test family). Direct and CoT each yield 13 net corrections. Their accuracy differences from SELF-DISCOVER are not significant (both Holm-adjusted <i>p</i> = 0.9614).</p>
@@ -170,10 +172,10 @@
         <a href="assets/routing.webp" target="_blank" rel="noopener" aria-label="Open the routing analysis figure"><img src="assets/routing.webp" loading="lazy" alt="Confidence distributions, error capture by routing budget, and error concentration in routed posts."></a>
         <figcaption><strong>Routing analysis.</strong> On Reddit, routed posts have a 44.95% Phase 1 error rate compared with 3.08% over the full set (14.58 times higher). Confidence routing concentrates errors but leaves some errors in the accepted set.</figcaption>
       </figure>
-      <figure>
+      <details class="supporting-figure"><summary>Additional evaluation: all three confusion matrices</summary><figure>
         <a href="assets/additional-confusion.webp" target="_blank" rel="noopener" aria-label="Open the additional evaluation confusion matrices"><img src="assets/additional-confusion.webp" loading="lazy" alt="Direct, CoT, and SELF-DISCOVER confusion matrices on the additional 9,000-post evaluation."></a>
         <figcaption><strong>Additional evaluation.</strong> Rows are reference labels and columns are final predictions. Each method is evaluated on the same 9,000 posts.</figcaption>
-      </figure>
+      </figure></details>
     </section>
     <section id="findings" class="findings">
       <div class="section-heading"><span class="section-number">KEY FINDINGS</span><h2>What the results establish</h2></div>
@@ -185,8 +187,8 @@
       <p class="findings-scope">These task-specific findings do not establish clinical validity or cross-platform generalization. <a href="#data">Data construction and scope &rarr;</a></p>
     </section>
     <section class="paper-algorithms" id="algorithm">
-      <div class="section-heading"><span class="section-number">03 / ALGORITHMS</span><h2>The four procedures in the paper</h2></div>
-      <p class="section-intro">Policy selection, inference, evaluation, and SELF-DISCOVER execution are separate procedures. The panels reproduce Algorithms 1&ndash;4 directly from the manuscript PDF, preserving mathematical notation and line numbering.</p>
+      <div class="section-heading"><span class="section-number">03 / ALGORITHMS</span><h2>Calibration, routing, and execution</h2></div>
+      <p class="section-intro">The manuscript's four procedures separate policy selection, per-post inference, SELF-DISCOVER execution, and outcome evaluation.</p>
       <nav class="procedure-map" aria-label="Algorithm sequence">
         <a href="#algorithm-1"><small>Before testing</small><strong>1. Calibrate &amp; select</strong><span>Fix T* and &tau;*</span></a>
         <a href="#algorithm-2"><small>For each post</small><strong>2. Classify &amp; route</strong><span>Keep or re-evaluate</span></a>
