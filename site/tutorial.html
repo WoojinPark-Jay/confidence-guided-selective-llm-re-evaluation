@@ -14,15 +14,14 @@
     <p class="section-number">AN INTERACTIVE TUTORIAL</p>
     <h1>Temperature Scaling &amp; Calibration</h1>
     <p class="tutorial-intro">From model scores to calibrated probabilities: explore confidence, compare calibration metrics, and find the temperature that minimizes NLL.</p>
-    <ol class="learning-path" aria-label="Tutorial topics"><li><span>01</span><strong>Probabilities</strong><small>Temperature and confidence</small></li><li><span>02</span><strong>Calibration metrics</strong><small>NLL, Brier and adaptive ECE</small></li><li><span>03</span><strong>Temperature selection</strong><small>The minimum-NLL operating point</small></li></ol>
-    <p class="demo-notice">Educational simulation, not research results. These are artificial scores and labels, not generated posts, patient records, or predictions from the manuscript.</p>
+    <p class="demo-notice">Educational simulation with artificial scores and labels, not patient records or manuscript results.</p>
   </header>
   <div class="experiment-settings">
     <label>Examples <select id="sample-size"><option value="12">12 hand-crafted</option><option value="60">60 simulated</option><option value="600" selected>600 simulated</option></select></label>
     <label>Binning <select id="bin-mode"><option value="width">Equal width / ECE</option><option value="mass">Equal count / adaptive ECE</option></select></label>
     <label>Bins <select id="bin-count"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select></label>
   </div>
-  <p id="data-description" class="lab-note"></p>
+  <details class="example-description"><summary>About these examples</summary><p id="data-description" class="lab-note"></p></details>
   <section class="temperature-controls" aria-label="Temperature controls">
     <div class="control-heading"><label for="temperature">Temperature <i>T</i></label><output id="temperature-value" for="temperature">1.00</output><button id="animate" type="button" aria-label="Animate temperature" title="Animate temperature">&#9654;</button><button id="reset" type="button" aria-label="Reset temperature to 1" title="Reset temperature to 1">&#8634;</button></div>
     <input type="range" id="temperature" min="0.5" max="3" step="0.01" value="1">
