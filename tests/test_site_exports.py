@@ -101,7 +101,11 @@ class SiteExportTests(unittest.TestCase):
             self.assertIn('value="600" selected', tutorial)
             self.assertIn('not research results', tutorial)
             self.assertIn('Temperature Scaling &amp; Calibration', tutorial)
-            self.assertIn('aria-label="Tutorial topics"', tutorial)
+            self.assertIn('<details class="example-description">', tutorial)
+            self.assertIn('<summary>About these examples</summary>', tutorial)
+            self.assertIn('id="data-description"', tutorial)
+            self.assertIn('aria-label="Temperature controls"', tutorial)
+            self.assertIn('aria-label="Calibration metrics"', tutorial)
             self.assertEqual(html.count('class="tutorial-cta" href="tutorial.html"'), 2)
 
     def test_cases_match_released_predictions_and_synthetic_text(self):
